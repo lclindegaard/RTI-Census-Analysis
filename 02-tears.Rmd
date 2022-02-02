@@ -3,7 +3,7 @@
 Import data and libraries into R
 
 ```{r}
-census = read.csv('/Users/lindegaard/Documents/GitHub Repo/Bookdown-Template/Bookdown-Template/exercise01_consolidated.csv')
+census = read.csv('/Users/lindegaard/Documents/GitHub Repo/exercise01_consolidated.csv')
 library(ggplot2)
 library(dplyr)
 library(InformationValue)
@@ -15,8 +15,9 @@ Exploratory Analysis
 
 ```{r}
 #Perform a simple exploratory analysis and generate summary statistics to get a sense of what is in the data.
-#You should commit any useful or informative exploratory code.
 
+#Exploring the types of data
+typeof(census$age)
 
 
 

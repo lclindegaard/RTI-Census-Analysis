@@ -7,8 +7,9 @@ site: bookdown::bookdown_site
 
 # SQL Data Consolidation
 
+Main objective: Select all variables from the records table and join them with all other tables to consolidate 9 tables into 1
+
 ```{sql, output.var="db"}
--- Objective: select all variables from the records table and join them with all other tables (linked by tablename_id = id)
 
 -- The select statement contains 2 data cleaning steps: 1. Remove redundant columns 2. Rename variables to logical names
 SELECT r.id as id, over_50k, age, education_num, capital_gain, capital_loss, hours_week, workclass_id, w.name as workclass, education_level_id, e.name as education_level, marital_status_id, m.name as marital_status, occupation_id, o.name as occupation, relationship_id, rel.name as relationship, race_id, races.name as race, sex_id, s.name as sex, country_id, c.name as country
@@ -23,6 +24,7 @@ LEFT JOIN relationships as rel ON r.relationship_id = rel.id
 LEFT JOIN sexes as s ON r.sex_id = s.id
 LEFT JOIN workclasses as w ON r.workclass_id = w.id;
 -- Per instruction, the above statement was exported to CSV
+
 ```
 
 ## Curious what this does - title?
