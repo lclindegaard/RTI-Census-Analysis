@@ -1,1 +1,7 @@
-# A caucus-race and a long tale
+# Conclusion / Write Up
+
+1. Describe your methodology and results in 500 words or less.
+    - Include the chart generated as of your write-up. Explain how the chart informs your analysis.
+    - You'll not be punished for going over 500 words, but it is a rough guideline of the length we expect.
+2. Include a chart that you feel conveys one important relationship in the data.
+
