@@ -1,3 +1,4 @@
-here-we-go
-the-pool-of-tears
-a-caucus-race-and-a-long-tale
+sql-data-consolidation
+curious-what-this-does---title
+model-building
+conclusion-write-up

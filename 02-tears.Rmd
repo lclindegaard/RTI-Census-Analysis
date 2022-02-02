@@ -11,7 +11,9 @@ library(InformationValue)
 
 ```
 
-Exploratory Analysis
+Clean data and exploratory analysis
+
+
 
 ```{r}
 #Perform a simple exploratory analysis and generate summary statistics to get a sense of what is in the data.
@@ -21,18 +23,19 @@ for (x in 1:23) {
   print(colnames(census[x]))
   print(class(census[,x]))
 }
-
-# If there are less than 10 levels, factorize the variable
+# Explore values in larger categorical variables
+table(census$education_level)
+# If there are less than 20 levels, factorize the variable
 for (x in 1:23) {
-  if (length(table(census[,x])) < 10)
+  if (length(table(census[,x])) < 20)
   census[,x] = as.factor(census[,x])
 }
-# Check loop worked
-class(census$over_50k)
-class(census$marital_status_id)
 
-# Country, occupation and education are currently not a factor
+# Country is currently not a factor - manually factorize
+census$country = as.factor(census$country)
+census$country_id = as.factor(census$country_id)
 
+# Check the variables that are not treated as factors
 for (x in 1:23) {
   if (class(census[,x]) != "factor") {
     print(colnames(census[x]))
@@ -41,10 +44,14 @@ for (x in 1:23) {
 }
 
 
+## Check for NA Values (represented with "?") in each variable
+sapply(census, function(x) any(x == "?"))
+# NA Values in workclass, occupation and country, but they will be treated as an individual category in each of these factor variables
 
 
 
 ```
+
 
 Split data into training, validation and test
 
