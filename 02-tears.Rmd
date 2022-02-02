@@ -17,7 +17,30 @@ Exploratory Analysis
 #Perform a simple exploratory analysis and generate summary statistics to get a sense of what is in the data.
 
 #Exploring the types of data
-typeof(census$age)
+for (x in 1:23) {
+  print(colnames(census[x]))
+  print(class(census[,x]))
+}
+
+# If there are less than 10 levels, factorize the variable
+for (x in 1:23) {
+  if (length(table(census[,x])) < 10)
+  census[,x] = as.factor(census[,x])
+}
+# Check loop worked
+class(census$over_50k)
+class(census$marital_status_id)
+
+# Country, occupation and education are currently not a factor
+
+for (x in 1:23) {
+  if (class(census[,x]) != "factor") {
+    print(colnames(census[x]))
+    print(class(census[,x]))
+  }
+}
+
+
 
 
 
