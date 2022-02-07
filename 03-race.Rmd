@@ -29,7 +29,7 @@ The logistic regression was able to better predict people who make over $50,000/
 
 ## Figure 1 Code
 
-```{r Marital Chart, results='hide'}
+```{r Marital Chart Code, results='hide'}
 # Add color blind palette
 cbPalette = c("#999999", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#D55E00", "#CC79A7")
 
