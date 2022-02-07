@@ -223,71 +223,71 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div id="variable-importance" class="section level2" number="4.3">
 <h2><span class="header-section-number">4.3</span> Variable importance</h2>
 <div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb33-1"><a href="create-xgboost.html#cb33-1" aria-hidden="true" tabindex="-1"></a>xgb <span class="ot">&lt;-</span> <span class="fu">xgboost</span>(<span class="at">data =</span> train_x, <span class="at">label =</span> train_y, <span class="at">subsample =</span> .<span class="dv">25</span>, <span class="at">nrounds =</span> <span class="dv">11</span>, <span class="at">eta =</span> <span class="fl">0.9</span>, <span class="at">max_depth =</span> <span class="dv">10</span>)</span></code></pre></div>
-<pre><code>## [1]  train-rmse:0.341861 
-## [2]  train-rmse:0.336858 
-## [3]  train-rmse:0.337494 
-## [4]  train-rmse:0.338419 
-## [5]  train-rmse:0.339444 
-## [6]  train-rmse:0.340151 
-## [7]  train-rmse:0.340251 
-## [8]  train-rmse:0.340741 
-## [9]  train-rmse:0.340683 
-## [10] train-rmse:0.341842 
-## [11] train-rmse:0.343642</code></pre>
+<pre><code>## [1]  train-rmse:0.343095 
+## [2]  train-rmse:0.338909 
+## [3]  train-rmse:0.338673 
+## [4]  train-rmse:0.338262 
+## [5]  train-rmse:0.338478 
+## [6]  train-rmse:0.339279 
+## [7]  train-rmse:0.338436 
+## [8]  train-rmse:0.339909 
+## [9]  train-rmse:0.340088 
+## [10] train-rmse:0.341383 
+## [11] train-rmse:0.342746</code></pre>
 <div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb35-1"><a href="create-xgboost.html#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="fu">xgb.importance</span>(<span class="at">feature_names =</span> <span class="fu">colnames</span>(train_x), <span class="at">model =</span> xgb)</span></code></pre></div>
-<pre><code>##                                 Feature         Gain        Cover   Frequency
-##  1:    marital_statusMarried-civ-spouse 0.2170486945 0.0406630705 0.058394161
-##  2:              capital_gain_indicator 0.0509703637 0.0587049263 0.044747699
-##  3:            education_levelBachelors 0.0498892447 0.0445254917 0.027927642
-##  4:            occupationProf-specialty 0.0402544496 0.0388857970 0.019358934
-##  5:                     hours_week_bin2 0.0377129450 0.0338693860 0.047921295
-##  6:           occupationExec-managerial 0.0371504773 0.0460174972 0.022215170
-##  7:                            age_bin2 0.0349664232 0.0345917061 0.051412250
-##  8:              capital_loss_indicator 0.0318790597 0.0355842235 0.039035227
-##  9:                     hours_week_bin1 0.0311808658 0.0103493080 0.057759441
-## 10:                             sexMale 0.0310402415 0.0104343501 0.039669946
-## 11:                            age_bin1 0.0309987916 0.0274255585 0.060615678
-## 12:              education_levelMasters 0.0295998742 0.0367274485 0.018724215
-## 13:                            age_bin3 0.0222435099 0.0167296230 0.039669946
-## 14:                  workclassLocal-gov 0.0218294472 0.0215232020 0.026340844
-## 15:                    workclassPrivate 0.0215192540 0.0156617518 0.034274833
-## 16:         education_levelSome-college 0.0208081911 0.0159524022 0.024754046
-## 17:         marital_statusNever-married 0.0198628925 0.0111405230 0.030783878
-## 18:              education_levelHS-grad 0.0155813780 0.0195510850 0.027610282
-## 19:                         country_bin 0.0150838248 0.0136067457 0.026658204
-## 20:                           raceWhite 0.0146382639 0.0124872033 0.017454776
-## 21:              raceAsian-Pac-Islander 0.0143401568 0.0143753546 0.016820057
-## 22:           workclassSelf-emp-not-inc 0.0143334631 0.0238968471 0.017772136
-## 23:            education_levelAssoc-voc 0.0140624851 0.0228795706 0.017772136
-## 24:               workclassSelf-emp-inc 0.0133687868 0.0504978196 0.013646461
-## 25:                     occupationSales 0.0130195780 0.0203498355 0.017454776
-## 26:              occupationCraft-repair 0.0118867741 0.0167403878 0.015233259
-## 27:            education_levelDoctorate 0.0117016143 0.0394380328 0.011424944
-## 28:                           raceBlack 0.0112355082 0.0133774548 0.018724215
-## 29:                  workclassState-gov 0.0105171380 0.0301953494 0.013646461
-## 30:          occupationTransport-moving 0.0099517709 0.0100780343 0.009520787
-## 31:          education_levelProf-school 0.0095963753 0.0149232844 0.006029832
-## 32:           occupationFarming-fishing 0.0082661150 0.0171279217 0.006029832
-## 33:             occupationOther-service 0.0078412236 0.0157177289 0.007616630
-## 34:           education_levelAssoc-acdm 0.0076647336 0.0171462219 0.013329102
-## 35:              occupationAdm-clerical 0.0070971234 0.0122568359 0.010472866
-## 36:              occupationTech-support 0.0068552793 0.0131255578 0.008886068
-## 37:           occupationProtective-serv 0.0064961303 0.0434177906 0.006981911
-## 38:              education_level7th-8th 0.0055750859 0.0064782750 0.007299270
-## 39:                    workclassUnknown 0.0054032885 0.0011690606 0.006029832
-## 40:                 education_level11th 0.0049837833 0.0049938048 0.006981911
-## 41:               marital_statusWidowed 0.0048798903 0.0035459351 0.010472866
-## 42:         occupationMachine-op-inspct 0.0045711844 0.0130555864 0.005395113
-## 43: marital_statusMarried-spouse-absent 0.0044131857 0.0025986301 0.006347191
-## 44:             marital_statusSeparated 0.0043003708 0.0031960782 0.008251349
-## 45:                 education_level12th 0.0032412191 0.0110651692 0.004443034
-## 46:                           raceOther 0.0022337056 0.0023747216 0.004125674
-## 47:         occupationHandlers-cleaners 0.0021477871 0.0081177586 0.002856236
-## 48:                  education_level9th 0.0019087187 0.0058054731 0.003808315
-## 49:              education_level5th-6th 0.0018359684 0.0055546525 0.003490955
-## 50:     marital_statusMarried-AF-spouse 0.0012898087 0.0118962141 0.002221517
-## 51:             education_levelEarly-Ed 0.0007235556 0.0001733138 0.001586798
-##                                 Feature         Gain        Cover   Frequency</code></pre>
+<pre><code>##                                 Feature        Gain        Cover    Frequency
+##  1:    marital_statusMarried-civ-spouse 0.209767501 0.0490872111 0.0525143221
+##  2:              capital_gain_indicator 0.074435030 0.0458998130 0.0531508593
+##  3:           occupationExec-managerial 0.052149406 0.0220364774 0.0267345640
+##  4:            occupationProf-specialty 0.036610079 0.0318259619 0.0200509230
+##  5:                            age_bin2 0.036341528 0.0268586575 0.0509229790
+##  6:            education_levelBachelors 0.034486319 0.0378326120 0.0340547422
+##  7:                    workclassPrivate 0.033794999 0.0230224686 0.0467854870
+##  8:                            age_bin1 0.030494296 0.0252985718 0.0563335455
+##  9:                     hours_week_bin1 0.030164027 0.0192257621 0.0585614258
+## 10:                     hours_week_bin2 0.028289495 0.0554534706 0.0299172502
+## 11:              capital_loss_indicator 0.026246599 0.0559304599 0.0381922342
+## 12:                             sexMale 0.025229935 0.0144270580 0.0372374284
+## 13:                            age_bin3 0.023740915 0.0417072161 0.0337364736
+## 14:                  workclassLocal-gov 0.021864577 0.0150918551 0.0254614895
+## 15:         education_levelSome-college 0.021693021 0.0143993136 0.0267345640
+## 16:           workclassSelf-emp-not-inc 0.019219758 0.0202619066 0.0248249523
+## 17:              education_levelMasters 0.018998655 0.0374495266 0.0216422661
+## 18:         marital_statusNever-married 0.018671716 0.0139095193 0.0311903246
+## 19:                         country_bin 0.016205474 0.0273281772 0.0267345640
+## 20:                     occupationSales 0.014904698 0.0269568298 0.0155951623
+## 21:              education_levelHS-grad 0.013899066 0.0099218036 0.0225970719
+## 22:            education_levelDoctorate 0.013812647 0.0519662202 0.0117759389
+## 23:                  workclassState-gov 0.013600639 0.0162283061 0.0168682368
+## 24:                           raceBlack 0.013521682 0.0086594361 0.0178230426
+## 25:          education_levelProf-school 0.013292339 0.0453011755 0.0108211330
+## 26:              occupationCraft-repair 0.013042392 0.0253593959 0.0143220878
+## 27:               workclassSelf-emp-inc 0.011626254 0.0136662228 0.0190961171
+## 28:              raceAsian-Pac-Islander 0.011156863 0.0277795563 0.0152768937
+## 29:              occupationTech-support 0.009945371 0.0104201347 0.0085932527
+## 30:            education_levelAssoc-voc 0.009555317 0.0075176497 0.0133672820
+## 31:                           raceWhite 0.009221933 0.0021544549 0.0105028644
+## 32:              occupationAdm-clerical 0.009064291 0.0169229817 0.0111394017
+## 33:           education_levelAssoc-acdm 0.008998182 0.0286310942 0.0136855506
+## 34:             occupationOther-service 0.008805552 0.0044166859 0.0120942075
+## 35:             marital_statusSeparated 0.007710673 0.0064964445 0.0095480586
+## 36:                    workclassUnknown 0.007366862 0.0039503675 0.0095480586
+## 37:               marital_statusWidowed 0.005448781 0.0025844922 0.0095480586
+## 38:           occupationFarming-fishing 0.005443495 0.0210142051 0.0050922979
+## 39:         occupationMachine-op-inspct 0.005110801 0.0071452352 0.0054105665
+## 40:              education_level7th-8th 0.004961101 0.0026506518 0.0066836410
+## 41:          occupationTransport-moving 0.004897376 0.0090958759 0.0063653724
+## 42:           occupationProtective-serv 0.004889728 0.0157193041 0.0050922979
+## 43:         occupationHandlers-cleaners 0.004201387 0.0159626006 0.0050922979
+## 44:                 education_level11th 0.003864920 0.0029462357 0.0060471038
+## 45:                  education_level9th 0.003341819 0.0119727508 0.0054105665
+## 46:                 education_level12th 0.002514823 0.0018161873 0.0035009548
+## 47: marital_statusMarried-spouse-absent 0.002408900 0.0030700182 0.0054105665
+## 48:                           raceOther 0.002377651 0.0082966254 0.0031826862
+## 49:              education_level5th-6th 0.001104791 0.0004225677 0.0019096117
+## 50:             education_levelEarly-Ed 0.000963236 0.0069659641 0.0028644176
+## 51:     marital_statusMarried-AF-spouse 0.000543100 0.0069424881 0.0009548059
+##                                 Feature        Gain        Cover    Frequency</code></pre>
 <div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb37-1"><a href="create-xgboost.html#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="fu">xgb.ggplot.importance</span>(<span class="fu">xgb.importance</span>(<span class="at">feature_names =</span> <span class="fu">colnames</span>(train_x), <span class="at">model =</span> xgb))</span></code></pre></div>
 <p><img src="bookdownproj_files/figure-html/Create%20XGBoost%20and%20Var%20Imp-1.png" width="672" /></p>
 </div>
@@ -304,7 +304,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <pre><code>## Setting levels: control = 0, case = 1</code></pre>
 <pre><code>## Setting direction: controls &lt; cases</code></pre>
 <div class="sourceCode" id="cb41"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb41-1"><a href="create-xgboost.html#cb41-1" aria-hidden="true" tabindex="-1"></a>rocobj<span class="sc">$</span>auc <span class="co"># to get AUC - 0.816</span></span></code></pre></div>
-<pre><code>## Area under the curve: 0.847</code></pre>
+<pre><code>## Area under the curve: 0.8272</code></pre>
 <div class="sourceCode" id="cb43"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb43-1"><a href="create-xgboost.html#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="co"># create ROC plot with minimal theme</span></span>
 <span id="cb43-2"><a href="create-xgboost.html#cb43-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggroc</span>(rocobj, <span class="at">colour =</span> <span class="st">&#39;steelblue&#39;</span>, <span class="at">size =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
 <span id="cb43-3"><a href="create-xgboost.html#cb43-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="fu">paste0</span>(<span class="st">&#39;XGBoost Model ROC Curve &#39;</span>, <span class="st">&#39;(AUC = &#39;</span>, <span class="fu">round</span>(rocobj<span class="sc">$</span>auc, <span class="dv">4</span>), <span class="st">&#39;)&#39;</span>)) <span class="sc">+</span></span>
