@@ -7,13 +7,11 @@ Methodology
 The first two steps were exploring each variable individually and binning continuous variables into categories. Each variable was then tested for quasi-complete separation. This is a problem when a subgroup of the predictor variable perfectly predicts the target variable outcome. Each subgroup with less than 5 observations was collapsed into a new, larger group. The data was split into a 70/20/10 training/validation/test split and each variable was tested for multi-collinearity to ensure no two variables are providing the same information in the model. Stepwise selection was used to identify which variables were important in predicting the target. The 13 important variables were then used in a forward selection process to identify any predictive interactions. For example, the selection process identified changes in the target variables relationship with hours worked each week when looking at different occupations. A logistic regression was built using these variables. The XGBoost was tuned and built using all census variables, and the most important variables were calculated using a gain statistic. 
 
 Results
-A simple relationship between marital status and people who make over 50k can be pictured in Figure 1. This figure shows the large majority of people who make over 50k are married to civil spouses. In our census data, 85% of people who make over 50k are married to a civil spouse compared to only 33% of those who do not make over 50k. Furthermore, the XGBoost model found marital status to be the most important variable in predicting the target.
+A simple relationship between marital status and people who make over 50k can be pictured in Figure 1 below. This figure shows the large majority of people who make over 50k are married to civil spouses. In our census data, 85% of people who make over 50k are married to a civil spouse compared to only 33% of those who do not make over 50k. Furthermore, the XGBoost model found marital status to be the most important variable in predicting the target.
 
-The logistic regression was able to better predict people who make over $50,000/year using census variables. I recommend using a logistic regression moving forward to best predict the individuals that make over 50K using census data. Given more time for tuning, you might be able to challenge the predictive power using a future XGBoost model.
+Figure 1. Marital status for those who make more than $50,000 (1) and those who do not (0)
 
-## Figure 1
-
-```{r Marital Chart, echo=TRUE}
+```{r Marital Chart, include=FALSE}
 # Add color blind palette
 cbPalette = c("#999999", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#D55E00", "#CC79A7")
 
@@ -26,7 +24,25 @@ ggplot(data = train) +
   theme_minimal()
 ```
 
-## Final AUROC Chart
+
+The logistic regression was able to better predict people who make over $50,000/year using census variables. I recommend using a logistic regression moving forward to best predict the individuals that make over 50K using census data. Given more time for tuning, you might be able to challenge the predictive power using a future XGBoost model.
+
+## Figure 1 Code
+
+```{r Marital Chart, results='hide'}
+# Add color blind palette
+cbPalette = c("#999999", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#D55E00", "#CC79A7")
+
+# Plot data
+ggplot(data = train) +
+  geom_bar(mapping = aes(x = over_50k, fill = marital_status, color =)) +
+  scale_fill_manual(values=cbPalette) + 
+  #scale_fill_discrete(labels = c("Divorced", "Married- Armed Forces", "Married- Civil Spouse", "Married- Spouse Absent", "Never Married", "Separated", "Widowed")) +
+  labs(title="Marital Status over Earning Category", x ="Earning Over 50k (0: No, 1: Yes)", y = "Frequency", fill = "Marital Status") +
+  theme_minimal()
+```
+
+## Final AUROC Chart and Code
 
 ```{r FINAL AUROC, echo=TRUE}
 # Make predictions on validation set

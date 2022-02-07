@@ -133,7 +133,7 @@ CrossTable(census$occupation, census$over_50k)
 
 ## Split data into training, validation and test
 
-```{r Split data, include=FALSE}
+```{r Split data, results = 'hide'}
 #Split the data into a 70/20/10 training, validation, and test data split.
 train = census %>% sample_frac(0.7)
 test_validation = anti_join(census, train, by = 'id')
@@ -143,7 +143,7 @@ validation = anti_join(test_validation, test, by = 'id')
 
 ## Exploratory Statistics on Training Data
 
-```{r Exploratory, include=FALSE}
+```{r Exploratory, results = 'hide'}
 prop.table(table(train$over_50k)) # 24 % over 50k
 
 # Explore odds ratio for binary variables
@@ -167,7 +167,7 @@ chisq.test(table(train$over_50k, train$education_level)) # p-value < 2.2e-16
 
 ## Check for issues with multi-collinearity
 
-```{r VIF Check, include=FALSE}
+```{r VIF Check, results = 'hide'}
 VIF.model=glm(over_50k~.,data=train[,2:13],family = binomial(link = "logit"))
 VIF.model
 # No VIF over 10
@@ -175,7 +175,7 @@ VIF.model
 
 ## Variable Selection
 
-```{r Variable Selection, echo=TRUE}
+```{r Variable Selection, results = 'hide'}
 # Stepwise selection to select relevant variables
 full.model <-  glm(over_50k ~ ., data=train[,2:13], family = binomial(link = "logit"))
 empty.model <- glm(over_50k ~ 1, data=train[,2:13], family = binomial(link = "logit"))
@@ -305,7 +305,7 @@ plotROC(validation$over_50k, validation$p_hat) # 0.899 AUROC
 
 # Create XGBoost
 
-```{r XGBoost, include=FALSE}
+```{r XGBoost, results = 'hide'}
 #XGBoost model here
 # Prepare data for XGBoost function
 train_x <- model.matrix(over_50k ~ ., data = train)[, 3:53]
@@ -315,7 +315,7 @@ train_y <- as.numeric(as.character(train$over_50k))
 
 ## Tuning an XGBoost nrounds parameter - 11 was lowest
 
-```{r Tuning, eval=FALSE, include=FALSE}
+```{r Tuning, eval=FALSE, results = 'hide'}
 xgbcv <- xgb.cv(data = train_x, label = train_y, subsample = 0.5, nrounds = 100, nfold = 10)
 eval <- xgbcv$evaluation_log
 
@@ -325,7 +325,7 @@ eval %>%
 
 ## Tuning through caret
 
-```{r Tuning long code, eval=FALSE, include=FALSE}
+```{r Tuning long code, eval=FALSE, results = 'hide'}
 tune_grid <- expand.grid(
   nrounds = 11,
   eta = c(0.8, 0.85, 0.9, 0.95),
