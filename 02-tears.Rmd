@@ -1,6 +1,6 @@
-# Model Building
+# Variable Cleaning and Formating
 
-# Import data and libraries into R
+## Import data and libraries into R
 
 ```{r Import data and Libraries, include=FALSE}
 census = read.csv('exercise01_consolidated.csv')
@@ -23,7 +23,7 @@ library(pROC)
 
 ```
 
-# Data Cleaning
+## Data Cleaning
 
 ```{r Data Cleaning, include=FALSE}
 #Exploring data types
@@ -43,7 +43,7 @@ sapply(census, function(x) any(x == "?")) # NA values are only in categorical va
 
 ```
 
-# Variable binning
+## Variable binning
 
 ```{r Exploratory Analysis, include=FALSE}
 
@@ -95,7 +95,7 @@ census = census[,c('id', 'over_50k', 'age_bin', 'capital_gain_indicator', 'capit
 
 ```
 
-# Check for Quasi Complete Separation
+## Check for Quasi Complete Separation
 
 ```{r Quasi Complete Separation, include=FALSE}
 # This loop will print out the column name for any cross table that contains zeros (separation) or < 5 observations
@@ -131,7 +131,7 @@ census = census %>%
 CrossTable(census$occupation, census$over_50k)
 ```
 
-# Split data into training, validation and test
+## Split data into training, validation and test
 
 ```{r Split data, include=FALSE}
 #Split the data into a 70/20/10 training, validation, and test data split.
@@ -141,7 +141,7 @@ test = test_validation %>% sample_frac(2/3)
 validation = anti_join(test_validation, test, by = 'id')
 ```
 
-# Exploratory Statistics on Training Data
+## Exploratory Statistics on Training Data
 
 ```{r Exploratory, include=FALSE}
 prop.table(table(train$over_50k)) # 24 % over 50k
@@ -163,9 +163,9 @@ chisq.test(table(train$over_50k, train$education_level)) # p-value < 2.2e-16
 
 ```
 
-## Develop Logistic Regression Model
+# Develop Logistic Regression Model
 
-# Check for issues with multi-collinearity
+## Check for issues with multi-collinearity
 
 ```{r VIF Check, include=FALSE}
 VIF.model=glm(over_50k~.,data=train[,2:13],family = binomial(link = "logit"))
@@ -173,7 +173,7 @@ VIF.model
 # No VIF over 10
 ```
 
-# Variable Selection
+## Variable Selection
 
 ```{r Variable Selection, echo=TRUE}
 # Stepwise selection to select relevant variables
@@ -212,7 +212,7 @@ for.model <- step(main.model,
 
 ```
 
-#Create Logistic Regression
+## Create Logistic Regression
 
 ```{r Logistic Regression, echo=TRUE}
 
@@ -225,7 +225,7 @@ summary(logit.model)
 
 ## Evaluate logistic regression
 
-# View Coefficient of Discrimination (R2)
+View Coefficient of Discrimination (R2)
 
 ```{r R2, echo=TRUE}
 # Get coefficient of discrimination (R2)
@@ -251,7 +251,7 @@ ggplot(train, aes(p_hat, fill = over_50k)) +
   theme_classic()
 ```
 
-# Determine optimal cut-off
+Determine optimal cut-off
 
 ```{r Cut Off, echo=TRUE}
 # Iterate through cut-off values to determine optimal cut-off
@@ -274,7 +274,7 @@ train$classification = ifelse(train$p_hat >= 0.2, 1, 0)
 confusionMatrix(train$over_50k, factor(train$classification))
 ```
 
-# AUROC
+AUROC
 
 ```{r AUROC, echo=TRUE}
 # Evaluate model using AUROC
@@ -284,7 +284,7 @@ plotROC(train$over_50k, train$p_hat) # 0.902 AUROC
 
 ```
 
-# Test training cut off on validation
+## Test training cut off on validation
 
 ```{r AUROC Validation, echo=TRUE}
 # Make predictions on validation set
@@ -303,7 +303,7 @@ plotROC(validation$over_50k, validation$p_hat) # 0.899 AUROC
 ```
 
 
-## Create XGBoost
+# Create XGBoost
 
 ```{r XGBoost, include=FALSE}
 #XGBoost model here
@@ -313,7 +313,7 @@ train_y <- as.numeric(as.character(train$over_50k))
 
 ```
 
-# Tuning an XGBoost nrounds parameter - 11 was lowest
+## Tuning an XGBoost nrounds parameter - 11 was lowest
 
 ```{r Tuning, eval=FALSE, include=FALSE}
 xgbcv <- xgb.cv(data = train_x, label = train_y, subsample = 0.5, nrounds = 100, nfold = 10)
@@ -323,7 +323,7 @@ eval %>%
   arrange(test_rmse_mean)
 ```
 
-# Tuning through caret
+## Tuning through caret
 
 ```{r Tuning long code, eval=FALSE, include=FALSE}
 tune_grid <- expand.grid(
@@ -345,7 +345,7 @@ xgb.caret
 ```
 eta = .9 and subsample = .25, max tree depth = 10
 
-# Variable importance
+## Variable importance
 
 ```{r Create XGBoost and Var Imp, echo=TRUE}
 
@@ -356,7 +356,7 @@ xgb.importance(feature_names = colnames(train_x), model = xgb)
 xgb.ggplot.importance(xgb.importance(feature_names = colnames(train_x), model = xgb))
 ```
 
-# ROC Curve and AUC
+## ROC Curve and AUC
 
 ```{r AUROC XGBoost, echo=TRUE}
 # get predictions
@@ -375,32 +375,3 @@ ggroc(rocobj, colour = 'steelblue', size = 2) +
   theme_minimal()+ labs(x="1-Specificity (FPR)",y="Sensitivity (TPR)")+geom_abline(intercept = 1.00, size = 0.5, linetype="dotted", color = "red")+ coord_cartesian(xlim=c(1,0))
 ```
 
-# Interesting relationship
-
-```{r Marital Chart, echo=TRUE}
-# Add color blind palette
-cbPalette = c("#999999", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#D55E00", "#CC79A7")
-
-# Plot data
-ggplot(data = train) +
-  geom_bar(mapping = aes(x = over_50k, fill = marital_status, color =)) +
-  scale_fill_manual(values=cbPalette) + 
-  #scale_fill_discrete(labels = c("Divorced", "Married- Armed Forces", "Married- Civil Spouse", "Married- Spouse Absent", "Never Married", "Separated", "Widowed")) +
-  labs(title="Marital Status over Earning Category", x ="Earning Over 50k (0: No, 1: Yes)", y = "Frequency", fill = "Marital Status") +
-  theme_minimal()
-```
-
-# Get final AUROC on test data
-
-```{r FINAL AUROC, echo=TRUE}
-# Make predictions on validation set
-test$p_hat = predict(logit.model, newdata = test, type = 'response')
-
-# Confusion Matrix using Youdens cutoff
-test$classification = ifelse(test$p_hat >= 0.2, 1, 0)
-confusionMatrix(test$over_50k, factor(test$classification))
-
-# Evaluate model using AUROC
-table(census$over_50k)
-plotROC(test$over_50k, test$p_hat) # 0.894 AUROC
-```

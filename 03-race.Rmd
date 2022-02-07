@@ -11,6 +11,34 @@ A simple relationship between marital status and people who make over 50k can be
 
 The logistic regression was able to better predict people who make over $50,000/year using census variables. I recommend using a logistic regression moving forward to best predict the individuals that make over 50K using census data. Given more time for tuning, you might be able to challenge the predictive power using a future XGBoost model.
 
+## Figure 1
+
+```{r Marital Chart, echo=TRUE}
+# Add color blind palette
+cbPalette = c("#999999", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#D55E00", "#CC79A7")
+
+# Plot data
+ggplot(data = train) +
+  geom_bar(mapping = aes(x = over_50k, fill = marital_status, color =)) +
+  scale_fill_manual(values=cbPalette) + 
+  #scale_fill_discrete(labels = c("Divorced", "Married- Armed Forces", "Married- Civil Spouse", "Married- Spouse Absent", "Never Married", "Separated", "Widowed")) +
+  labs(title="Marital Status over Earning Category", x ="Earning Over 50k (0: No, 1: Yes)", y = "Frequency", fill = "Marital Status") +
+  theme_minimal()
+```
+
+## Final AUROC Chart
+
+```{r FINAL AUROC, echo=TRUE}
+# Make predictions on validation set
+test$p_hat = predict(logit.model, newdata = test, type = 'response')
+
+# Evaluate model using AUROC
+plotROC(test$over_50k, test$p_hat) # 0.894 AUROC
+```
+
+
+
+
 
 
 
