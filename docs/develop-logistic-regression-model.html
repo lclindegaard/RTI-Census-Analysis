@@ -164,8 +164,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </ul></li>
 <li class="chapter" data-level="5" data-path="conclusion-write-up.html"><a href="conclusion-write-up.html"><i class="fa fa-check"></i><b>5</b> Conclusion / Write Up</a>
 <ul>
-<li class="chapter" data-level="5.1" data-path="conclusion-write-up.html"><a href="conclusion-write-up.html#figure-1"><i class="fa fa-check"></i><b>5.1</b> Figure 1</a></li>
-<li class="chapter" data-level="5.2" data-path="conclusion-write-up.html"><a href="conclusion-write-up.html#final-auroc-chart"><i class="fa fa-check"></i><b>5.2</b> Final AUROC Chart</a></li>
+<li class="chapter" data-level="5.1" data-path="conclusion-write-up.html"><a href="conclusion-write-up.html#figure-1-code"><i class="fa fa-check"></i><b>5.1</b> Figure 1 Code</a></li>
+<li class="chapter" data-level="5.2" data-path="conclusion-write-up.html"><a href="conclusion-write-up.html#final-auroc-chart-and-code"><i class="fa fa-check"></i><b>5.2</b> Final AUROC Chart and Code</a></li>
 </ul></li>
 <li class="divider"></li>
 <li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
@@ -190,404 +190,52 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <h1><span class="header-section-number">Chapter 3</span> Develop Logistic Regression Model</h1>
 <div id="check-for-issues-with-multi-collinearity" class="section level2" number="3.1">
 <h2><span class="header-section-number">3.1</span> Check for issues with multi-collinearity</h2>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="develop-logistic-regression-model.html#cb13-1" aria-hidden="true" tabindex="-1"></a>VIF.model<span class="ot">=</span><span class="fu">glm</span>(over_50k<span class="sc">~</span>.,<span class="at">data=</span>train[,<span class="dv">2</span><span class="sc">:</span><span class="dv">13</span>],<span class="at">family =</span> <span class="fu">binomial</span>(<span class="at">link =</span> <span class="st">&quot;logit&quot;</span>))</span>
+<span id="cb13-2"><a href="develop-logistic-regression-model.html#cb13-2" aria-hidden="true" tabindex="-1"></a>VIF.model</span>
+<span id="cb13-3"><a href="develop-logistic-regression-model.html#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="co"># No VIF over 10</span></span></code></pre></div>
 </div>
 <div id="variable-selection" class="section level2" number="3.2">
 <h2><span class="header-section-number">3.2</span> Variable Selection</h2>
-<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="develop-logistic-regression-model.html#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Stepwise selection to select relevant variables</span></span>
-<span id="cb11-2"><a href="develop-logistic-regression-model.html#cb11-2" aria-hidden="true" tabindex="-1"></a>full.model <span class="ot">&lt;-</span>  <span class="fu">glm</span>(over_50k <span class="sc">~</span> ., <span class="at">data=</span>train[,<span class="dv">2</span><span class="sc">:</span><span class="dv">13</span>], <span class="at">family =</span> <span class="fu">binomial</span>(<span class="at">link =</span> <span class="st">&quot;logit&quot;</span>))</span>
-<span id="cb11-3"><a href="develop-logistic-regression-model.html#cb11-3" aria-hidden="true" tabindex="-1"></a>empty.model <span class="ot">&lt;-</span> <span class="fu">glm</span>(over_50k <span class="sc">~</span> <span class="dv">1</span>, <span class="at">data=</span>train[,<span class="dv">2</span><span class="sc">:</span><span class="dv">13</span>], <span class="at">family =</span> <span class="fu">binomial</span>(<span class="at">link =</span> <span class="st">&quot;logit&quot;</span>))</span>
-<span id="cb11-4"><a href="develop-logistic-regression-model.html#cb11-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-5"><a href="develop-logistic-regression-model.html#cb11-5" aria-hidden="true" tabindex="-1"></a>step.model <span class="ot">&lt;-</span> <span class="fu">step</span>(empty.model,</span>
-<span id="cb11-6"><a href="develop-logistic-regression-model.html#cb11-6" aria-hidden="true" tabindex="-1"></a>                   <span class="at">scope =</span> <span class="fu">list</span>(<span class="at">lower=</span><span class="fu">formula</span>(empty.model),</span>
-<span id="cb11-7"><a href="develop-logistic-regression-model.html#cb11-7" aria-hidden="true" tabindex="-1"></a>                                <span class="at">upper=</span><span class="fu">formula</span>(full.model)),</span>
-<span id="cb11-8"><a href="develop-logistic-regression-model.html#cb11-8" aria-hidden="true" tabindex="-1"></a>                   <span class="at">direction =</span> <span class="st">&quot;both&quot;</span>)</span></code></pre></div>
-<pre><code>## Start:  AIC=37629.8
-## over_50k ~ 1
-## 
-##                          Df Deviance   AIC
-## + marital_status          6    30139 30153
-## + education_level        14    33160 33190
-## + occupation             12    33394 33420
-## + age_bin                 3    33888 33896
-## + hours_week_bin          2    35158 35164
-## + capital_gain_indicator  1    35581 35585
-## + sex                     1    35860 35864
-## + workclass               6    36615 36629
-## + capital_loss_indicator  1    37067 37071
-## + race                    4    37230 37240
-## + country_bin             1    37595 37599
-## &lt;none&gt;                         37628 37630
-## 
-## Step:  AIC=30152.84
-## over_50k ~ marital_status
-## 
-##                          Df Deviance   AIC
-## + education_level        14    26020 26062
-## + occupation             12    26777 26815
-## + capital_gain_indicator  1    28648 28664
-## + age_bin                 3    28887 28907
-## + hours_week_bin          2    29011 29029
-## + workclass               6    29592 29618
-## + capital_loss_indicator  1    29754 29770
-## + race                    4    30020 30042
-## + sex                     1    30079 30095
-## + country_bin             1    30088 30104
-## &lt;none&gt;                         30139 30153
-## - marital_status          6    37628 37630
-## 
-## Step:  AIC=26062.32
-## over_50k ~ marital_status + education_level
-## 
-##                          Df Deviance   AIC
-## + capital_gain_indicator  1    24905 24949
-## + occupation             12    25083 25149
-## + age_bin                 3    25147 25195
-## + hours_week_bin          2    25313 25359
-## + workclass               6    25717 25771
-## + capital_loss_indicator  1    25784 25828
-## + sex                     1    25946 25990
-## + race                    4    25967 26017
-## + country_bin             1    25979 26023
-## &lt;none&gt;                         26020 26062
-## - education_level        14    30139 30153
-## - marital_status          6    33160 33190
-## 
-## Step:  AIC=24948.58
-## over_50k ~ marital_status + education_level + capital_gain_indicator
-## 
-##                          Df Deviance   AIC
-## + occupation             12    24014 24082
-## + age_bin                 3    24090 24140
-## + hours_week_bin          2    24221 24269
-## + capital_loss_indicator  1    24559 24605
-## + workclass               6    24624 24680
-## + sex                     1    24833 24879
-## + race                    4    24856 24908
-## + country_bin             1    24871 24917
-## &lt;none&gt;                         24905 24949
-## - capital_gain_indicator  1    26020 26062
-## - education_level        14    28648 28664
-## - marital_status          6    31633 31665
-## 
-## Step:  AIC=24082.22
-## over_50k ~ marital_status + education_level + capital_gain_indicator + 
-##     occupation
-## 
-##                          Df Deviance   AIC
-## + age_bin                 3    23305 23379
-## + hours_week_bin          2    23518 23590
-## + capital_loss_indicator  1    23696 23766
-## + workclass               6    23874 23954
-## + sex                     1    23954 24024
-## + race                    4    23983 24059
-## + country_bin             1    23996 24066
-## &lt;none&gt;                         24014 24082
-## - occupation             12    24905 24949
-## - capital_gain_indicator  1    25083 25149
-## - education_level        14    25561 25601
-## - marital_status          6    30028 30084
-## 
-## Step:  AIC=23378.92
-## over_50k ~ marital_status + education_level + capital_gain_indicator + 
-##     occupation + age_bin
-## 
-##                          Df Deviance   AIC
-## + hours_week_bin          2    22858 22936
-## + capital_loss_indicator  1    23010 23086
-## + workclass               6    23167 23253
-## + sex                     1    23261 23337
-## + race                    4    23272 23354
-## + country_bin             1    23289 23365
-## &lt;none&gt;                         23305 23379
-## - age_bin                 3    24014 24082
-## - occupation             12    24090 24140
-## - capital_gain_indicator  1    24318 24390
-## - education_level        14    24722 24768
-## - marital_status          6    27781 27843
-## 
-## Step:  AIC=22936.3
-## over_50k ~ marital_status + education_level + capital_gain_indicator + 
-##     occupation + age_bin + hours_week_bin
-## 
-##                          Df Deviance   AIC
-## + capital_loss_indicator  1    22579 22659
-## + workclass               6    22752 22842
-## + race                    4    22835 22921
-## + country_bin             1    22847 22927
-## + sex                     1    22850 22930
-## &lt;none&gt;                         22858 22936
-## - hours_week_bin          2    23305 23379
-## - occupation             12    23496 23550
-## - age_bin                 3    23518 23590
-## - capital_gain_indicator  1    23846 23922
-## - education_level        14    24166 24216
-## - marital_status          6    27076 27142
-## 
-## Step:  AIC=22658.66
-## over_50k ~ marital_status + education_level + capital_gain_indicator + 
-##     occupation + age_bin + hours_week_bin + capital_loss_indicator
-## 
-##                          Df Deviance   AIC
-## + workclass               6    22473 22565
-## + race                    4    22558 22646
-## + country_bin             1    22569 22651
-## + sex                     1    22570 22652
-## &lt;none&gt;                         22579 22659
-## - capital_loss_indicator  1    22858 22936
-## - hours_week_bin          2    23010 23086
-## - occupation             12    23199 23255
-## - age_bin                 3    23215 23289
-## - capital_gain_indicator  1    23661 23739
-## - education_level        14    23826 23878
-## - marital_status          6    26740 26808
-## 
-## Step:  AIC=22564.56
-## over_50k ~ marital_status + education_level + capital_gain_indicator + 
-##     occupation + age_bin + hours_week_bin + capital_loss_indicator + 
-##     workclass
-## 
-##                          Df Deviance   AIC
-## + race                    4    22451 22551
-## + country_bin             1    22462 22556
-## + sex                     1    22466 22560
-## &lt;none&gt;                         22473 22565
-## - workclass               6    22579 22659
-## - capital_loss_indicator  1    22752 22842
-## - hours_week_bin          2    22873 22961
-## - occupation             12    23031 23099
-## - age_bin                 3    23110 23196
-## - capital_gain_indicator  1    23537 23627
-## - education_level        14    23731 23795
-## - marital_status          6    26627 26707
-## 
-## Step:  AIC=22550.61
-## over_50k ~ marital_status + education_level + capital_gain_indicator + 
-##     occupation + age_bin + hours_week_bin + capital_loss_indicator + 
-##     workclass + race
-## 
-##                          Df Deviance   AIC
-## + country_bin             1    22443 22545
-## + sex                     1    22445 22547
-## &lt;none&gt;                         22451 22551
-## - race                    4    22473 22565
-## - workclass               6    22558 22646
-## - capital_loss_indicator  1    22727 22825
-## - hours_week_bin          2    22842 22938
-## - occupation             12    23000 23076
-## - age_bin                 3    23087 23181
-## - capital_gain_indicator  1    23515 23613
-## - education_level        14    23697 23769
-## - marital_status          6    26528 26616
-## 
-## Step:  AIC=22545.08
-## over_50k ~ marital_status + education_level + capital_gain_indicator + 
-##     occupation + age_bin + hours_week_bin + capital_loss_indicator + 
-##     workclass + race + country_bin
-## 
-##                          Df Deviance   AIC
-## + sex                     1    22437 22541
-## &lt;none&gt;                         22443 22545
-## - country_bin             1    22451 22551
-## - race                    4    22462 22556
-## - workclass               6    22551 22641
-## - capital_loss_indicator  1    22718 22818
-## - hours_week_bin          2    22832 22930
-## - occupation             12    22986 23064
-## - age_bin                 3    23078 23174
-## - capital_gain_indicator  1    23505 23605
-## - education_level        14    23683 23757
-## - marital_status          6    26525 26615
-## 
-## Step:  AIC=22541.19
-## over_50k ~ marital_status + education_level + capital_gain_indicator + 
-##     occupation + age_bin + hours_week_bin + capital_loss_indicator + 
-##     workclass + race + country_bin + sex
-## 
-##                          Df Deviance   AIC
-## &lt;none&gt;                         22437 22541
-## - sex                     1    22443 22545
-## - country_bin             1    22445 22547
-## - race                    4    22455 22551
-## - workclass               6    22544 22636
-## - capital_loss_indicator  1    22712 22814
-## - hours_week_bin          2    22798 22898
-## - occupation             12    22984 23064
-## - age_bin                 3    23066 23164
-## - capital_gain_indicator  1    23499 23601
-## - education_level        14    23665 23741
-## - marital_status          6    25744 25836</code></pre>
-<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="develop-logistic-regression-model.html#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Forward selection to select two-variable interactions </span></span>
-<span id="cb13-2"><a href="develop-logistic-regression-model.html#cb13-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-3"><a href="develop-logistic-regression-model.html#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="co"># First: double check interactions for quasi complete separation</span></span>
-<span id="cb13-4"><a href="develop-logistic-regression-model.html#cb13-4" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(train<span class="sc">$</span>over_50k, train<span class="sc">$</span>hours_week_bin, train<span class="sc">$</span>occupation)</span></code></pre></div>
-<pre><code>## , ,  = ?
-## 
-##    
-##        0    1    2
-##   0  940  642  187
-##   1   74   70   52
-## 
-## , ,  = Adm-clerical
-## 
-##    
-##        0    1    2
-##   0 1033 1906  437
-##   1   89  311  150
-## 
-## , ,  = Craft-repair
-## 
-##    
-##        0    1    2
-##   0  396 2024  903
-##   1   36  547  396
-## 
-## , ,  = Exec-managerial
-## 
-##    
-##        0    1    2
-##   0  377 1056  833
-##   1  111  703 1228
-## 
-## , ,  = Farming-fishing
-## 
-##    
-##        0    1    2
-##   0  202  309  403
-##   1    5   29   88
-## 
-## , ,  = Handlers-cleaners
-## 
-##    
-##        0    1    2
-##   0  481  802  233
-##   1    8   62   24
-## 
-## , ,  = Machine-op-inspct
-## 
-##    
-##        0    1    2
-##   0  223 1311  355
-##   1    5  179   82
-## 
-## , ,  = Other-service
-## 
-##    
-##        0    1    2
-##   0 1598 1289  385
-##   1   40   58   46
-## 
-## , ,  = Prof-specialty
-## 
-##    
-##        0    1    2
-##   0  641 1019  715
-##   1  252  714  953
-## 
-## , ,  = Protective-serv
-## 
-##    
-##        0    1    2
-##   0   74  292  110
-##   1    8  123   94
-## 
-## , ,  = Sales
-## 
-##    
-##        0    1    2
-##   0 1003  950  850
-##   1   83  313  627
-## 
-## , ,  = Tech-support
-## 
-##    
-##        0    1    2
-##   0  166  415  137
-##   1   39  160   90
-## 
-## , ,  = Transport-moving
-## 
-##    
-##        0    1    2
-##   0  199  631  480
-##   1   20  119  194</code></pre>
-<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="develop-logistic-regression-model.html#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(train<span class="sc">$</span>over_50k, train<span class="sc">$</span>race, train<span class="sc">$</span>country_bin) <span class="co"># Quasi complete separation!!</span></span></code></pre></div>
-<pre><code>## , ,  = 0
-## 
-##    
-##     Amer-Indian-Eskimo Asian-Pac-Islander Black Other White
-##   0                 11                542   268   127  1848
-##   1                  1                207    34    20   442
-## 
-## , ,  = 1
-## 
-##    
-##     Amer-Indian-Eskimo Asian-Pac-Islander Black Other White
-##   0                273                228  2614   119 19977
-##   1                 30                 72   362    15  6999</code></pre>
-<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="develop-logistic-regression-model.html#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(train<span class="sc">$</span>over_50k, train<span class="sc">$</span>sex, train<span class="sc">$</span>capital_gain_indicator)</span></code></pre></div>
-<pre><code>## , ,  = 0
-## 
-##    
-##     Female  Male
-##   0   9683 15252
-##   1    939  5496
-## 
-## , ,  = 1
-## 
-##    
-##     Female  Male
-##   0    381   691
-##   1    278  1469</code></pre>
-<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="develop-logistic-regression-model.html#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Build main model with stepwise selected variables</span></span>
-<span id="cb19-2"><a href="develop-logistic-regression-model.html#cb19-2" aria-hidden="true" tabindex="-1"></a>main.model <span class="ot">&lt;-</span> <span class="fu">glm</span>(over_50k <span class="sc">~</span> marital_status <span class="sc">+</span> education_level <span class="sc">+</span> capital_gain_indicator <span class="sc">+</span> occupation <span class="sc">+</span> hours_week_bin <span class="sc">+</span> age_bin <span class="sc">+</span> capital_loss_indicator <span class="sc">+</span> workclass <span class="sc">+</span> country_bin <span class="sc">+</span> race,</span>
-<span id="cb19-3"><a href="develop-logistic-regression-model.html#cb19-3" aria-hidden="true" tabindex="-1"></a><span class="at">data =</span> train, <span class="at">family =</span> <span class="fu">binomial</span>(<span class="at">link =</span> <span class="st">&quot;logit&quot;</span>))</span>
-<span id="cb19-4"><a href="develop-logistic-regression-model.html#cb19-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-5"><a href="develop-logistic-regression-model.html#cb19-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Build model with interactions of interest</span></span>
-<span id="cb19-6"><a href="develop-logistic-regression-model.html#cb19-6" aria-hidden="true" tabindex="-1"></a>int.model <span class="ot">&lt;-</span> <span class="fu">glm</span>(over_50k <span class="sc">~</span> marital_status <span class="sc">+</span> education_level <span class="sc">+</span> capital_gain_indicator <span class="sc">+</span> occupation <span class="sc">+</span> hours_week_bin <span class="sc">+</span> age_bin <span class="sc">+</span> capital_loss_indicator <span class="sc">+</span> workclass <span class="sc">+</span> country_bin <span class="sc">+</span> race <span class="sc">+</span> hours_week_bin<span class="sc">*</span>occupation <span class="sc">+</span> sex<span class="sc">*</span>capital_gain_indicator, <span class="at">data =</span> train, <span class="at">family =</span> <span class="fu">binomial</span>(<span class="at">link =</span> <span class="st">&quot;logit&quot;</span>))</span>
-<span id="cb19-7"><a href="develop-logistic-regression-model.html#cb19-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-8"><a href="develop-logistic-regression-model.html#cb19-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Forward selection</span></span>
-<span id="cb19-9"><a href="develop-logistic-regression-model.html#cb19-9" aria-hidden="true" tabindex="-1"></a>for.model <span class="ot">&lt;-</span> <span class="fu">step</span>(main.model,</span>
-<span id="cb19-10"><a href="develop-logistic-regression-model.html#cb19-10" aria-hidden="true" tabindex="-1"></a>                  <span class="at">scope =</span> <span class="fu">list</span>(<span class="at">lower=</span><span class="fu">formula</span>(main.model),</span>
-<span id="cb19-11"><a href="develop-logistic-regression-model.html#cb19-11" aria-hidden="true" tabindex="-1"></a>                               <span class="at">upper=</span><span class="fu">formula</span>(int.model)),</span>
-<span id="cb19-12"><a href="develop-logistic-regression-model.html#cb19-12" aria-hidden="true" tabindex="-1"></a>                  <span class="at">direction =</span> <span class="st">&quot;forward&quot;</span>)</span></code></pre></div>
-<pre><code>## Start:  AIC=22545.08
-## over_50k ~ marital_status + education_level + capital_gain_indicator + 
-##     occupation + hours_week_bin + age_bin + capital_loss_indicator + 
-##     workclass + country_bin + race
-## 
-##                             Df Deviance   AIC
-## + occupation:hours_week_bin 24    22390 22540
-## + sex                        1    22437 22541
-## &lt;none&gt;                            22443 22545
-## 
-## Step:  AIC=22539.76
-## over_50k ~ marital_status + education_level + capital_gain_indicator + 
-##     occupation + hours_week_bin + age_bin + capital_loss_indicator + 
-##     workclass + country_bin + race + occupation:hours_week_bin
-## 
-##        Df Deviance   AIC
-## + sex   1    22383 22535
-## &lt;none&gt;       22390 22540
-## 
-## Step:  AIC=22535.35
-## over_50k ~ marital_status + education_level + capital_gain_indicator + 
-##     occupation + hours_week_bin + age_bin + capital_loss_indicator + 
-##     workclass + country_bin + race + sex + occupation:hours_week_bin
-## 
-##                              Df Deviance   AIC
-## &lt;none&gt;                             22383 22535
-## + capital_gain_indicator:sex  1    22383 22537</code></pre>
-<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="develop-logistic-regression-model.html#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Final model:</span></span>
-<span id="cb21-2"><a href="develop-logistic-regression-model.html#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="co"># over_50k ~ marital_status + education_level + capital_gain_indicator + </span></span>
-<span id="cb21-3"><a href="develop-logistic-regression-model.html#cb21-3" aria-hidden="true" tabindex="-1"></a><span class="co">#     occupation + hours_week_bin + age_bin + capital_loss_indicator + </span></span>
-<span id="cb21-4"><a href="develop-logistic-regression-model.html#cb21-4" aria-hidden="true" tabindex="-1"></a><span class="co">#     workclass + country_bin + race + occupation*hours_week_bin</span></span></code></pre></div>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="develop-logistic-regression-model.html#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Stepwise selection to select relevant variables</span></span>
+<span id="cb14-2"><a href="develop-logistic-regression-model.html#cb14-2" aria-hidden="true" tabindex="-1"></a>full.model <span class="ot">&lt;-</span>  <span class="fu">glm</span>(over_50k <span class="sc">~</span> ., <span class="at">data=</span>train[,<span class="dv">2</span><span class="sc">:</span><span class="dv">13</span>], <span class="at">family =</span> <span class="fu">binomial</span>(<span class="at">link =</span> <span class="st">&quot;logit&quot;</span>))</span>
+<span id="cb14-3"><a href="develop-logistic-regression-model.html#cb14-3" aria-hidden="true" tabindex="-1"></a>empty.model <span class="ot">&lt;-</span> <span class="fu">glm</span>(over_50k <span class="sc">~</span> <span class="dv">1</span>, <span class="at">data=</span>train[,<span class="dv">2</span><span class="sc">:</span><span class="dv">13</span>], <span class="at">family =</span> <span class="fu">binomial</span>(<span class="at">link =</span> <span class="st">&quot;logit&quot;</span>))</span>
+<span id="cb14-4"><a href="develop-logistic-regression-model.html#cb14-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-5"><a href="develop-logistic-regression-model.html#cb14-5" aria-hidden="true" tabindex="-1"></a>step.model <span class="ot">&lt;-</span> <span class="fu">step</span>(empty.model,</span>
+<span id="cb14-6"><a href="develop-logistic-regression-model.html#cb14-6" aria-hidden="true" tabindex="-1"></a>                   <span class="at">scope =</span> <span class="fu">list</span>(<span class="at">lower=</span><span class="fu">formula</span>(empty.model),</span>
+<span id="cb14-7"><a href="develop-logistic-regression-model.html#cb14-7" aria-hidden="true" tabindex="-1"></a>                                <span class="at">upper=</span><span class="fu">formula</span>(full.model)),</span>
+<span id="cb14-8"><a href="develop-logistic-regression-model.html#cb14-8" aria-hidden="true" tabindex="-1"></a>                   <span class="at">direction =</span> <span class="st">&quot;both&quot;</span>)</span>
+<span id="cb14-9"><a href="develop-logistic-regression-model.html#cb14-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-10"><a href="develop-logistic-regression-model.html#cb14-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Forward selection to select two-variable interactions </span></span>
+<span id="cb14-11"><a href="develop-logistic-regression-model.html#cb14-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-12"><a href="develop-logistic-regression-model.html#cb14-12" aria-hidden="true" tabindex="-1"></a><span class="co"># First: double check interactions for quasi complete separation</span></span>
+<span id="cb14-13"><a href="develop-logistic-regression-model.html#cb14-13" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(train<span class="sc">$</span>over_50k, train<span class="sc">$</span>hours_week_bin, train<span class="sc">$</span>occupation)</span>
+<span id="cb14-14"><a href="develop-logistic-regression-model.html#cb14-14" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(train<span class="sc">$</span>over_50k, train<span class="sc">$</span>race, train<span class="sc">$</span>country_bin) <span class="co"># Quasi complete separation!!</span></span>
+<span id="cb14-15"><a href="develop-logistic-regression-model.html#cb14-15" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(train<span class="sc">$</span>over_50k, train<span class="sc">$</span>sex, train<span class="sc">$</span>capital_gain_indicator)</span>
+<span id="cb14-16"><a href="develop-logistic-regression-model.html#cb14-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-17"><a href="develop-logistic-regression-model.html#cb14-17" aria-hidden="true" tabindex="-1"></a><span class="co"># Build main model with stepwise selected variables</span></span>
+<span id="cb14-18"><a href="develop-logistic-regression-model.html#cb14-18" aria-hidden="true" tabindex="-1"></a>main.model <span class="ot">&lt;-</span> <span class="fu">glm</span>(over_50k <span class="sc">~</span> marital_status <span class="sc">+</span> education_level <span class="sc">+</span> capital_gain_indicator <span class="sc">+</span> occupation <span class="sc">+</span> hours_week_bin <span class="sc">+</span> age_bin <span class="sc">+</span> capital_loss_indicator <span class="sc">+</span> workclass <span class="sc">+</span> country_bin <span class="sc">+</span> race,</span>
+<span id="cb14-19"><a href="develop-logistic-regression-model.html#cb14-19" aria-hidden="true" tabindex="-1"></a><span class="at">data =</span> train, <span class="at">family =</span> <span class="fu">binomial</span>(<span class="at">link =</span> <span class="st">&quot;logit&quot;</span>))</span>
+<span id="cb14-20"><a href="develop-logistic-regression-model.html#cb14-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-21"><a href="develop-logistic-regression-model.html#cb14-21" aria-hidden="true" tabindex="-1"></a><span class="co"># Build model with interactions of interest</span></span>
+<span id="cb14-22"><a href="develop-logistic-regression-model.html#cb14-22" aria-hidden="true" tabindex="-1"></a>int.model <span class="ot">&lt;-</span> <span class="fu">glm</span>(over_50k <span class="sc">~</span> marital_status <span class="sc">+</span> education_level <span class="sc">+</span> capital_gain_indicator <span class="sc">+</span> occupation <span class="sc">+</span> hours_week_bin <span class="sc">+</span> age_bin <span class="sc">+</span> capital_loss_indicator <span class="sc">+</span> workclass <span class="sc">+</span> country_bin <span class="sc">+</span> race <span class="sc">+</span> hours_week_bin<span class="sc">*</span>occupation <span class="sc">+</span> sex<span class="sc">*</span>capital_gain_indicator, <span class="at">data =</span> train, <span class="at">family =</span> <span class="fu">binomial</span>(<span class="at">link =</span> <span class="st">&quot;logit&quot;</span>))</span>
+<span id="cb14-23"><a href="develop-logistic-regression-model.html#cb14-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-24"><a href="develop-logistic-regression-model.html#cb14-24" aria-hidden="true" tabindex="-1"></a><span class="co"># Forward selection</span></span>
+<span id="cb14-25"><a href="develop-logistic-regression-model.html#cb14-25" aria-hidden="true" tabindex="-1"></a>for.model <span class="ot">&lt;-</span> <span class="fu">step</span>(main.model,</span>
+<span id="cb14-26"><a href="develop-logistic-regression-model.html#cb14-26" aria-hidden="true" tabindex="-1"></a>                  <span class="at">scope =</span> <span class="fu">list</span>(<span class="at">lower=</span><span class="fu">formula</span>(main.model),</span>
+<span id="cb14-27"><a href="develop-logistic-regression-model.html#cb14-27" aria-hidden="true" tabindex="-1"></a>                               <span class="at">upper=</span><span class="fu">formula</span>(int.model)),</span>
+<span id="cb14-28"><a href="develop-logistic-regression-model.html#cb14-28" aria-hidden="true" tabindex="-1"></a>                  <span class="at">direction =</span> <span class="st">&quot;forward&quot;</span>)</span>
+<span id="cb14-29"><a href="develop-logistic-regression-model.html#cb14-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-30"><a href="develop-logistic-regression-model.html#cb14-30" aria-hidden="true" tabindex="-1"></a><span class="co"># Final model:</span></span>
+<span id="cb14-31"><a href="develop-logistic-regression-model.html#cb14-31" aria-hidden="true" tabindex="-1"></a><span class="co"># over_50k ~ marital_status + education_level + capital_gain_indicator + </span></span>
+<span id="cb14-32"><a href="develop-logistic-regression-model.html#cb14-32" aria-hidden="true" tabindex="-1"></a><span class="co">#     occupation + hours_week_bin + age_bin + capital_loss_indicator + </span></span>
+<span id="cb14-33"><a href="develop-logistic-regression-model.html#cb14-33" aria-hidden="true" tabindex="-1"></a><span class="co">#     workclass + country_bin + race + occupation*hours_week_bin</span></span></code></pre></div>
 </div>
 <div id="create-logistic-regression" class="section level2" number="3.3">
 <h2><span class="header-section-number">3.3</span> Create Logistic Regression</h2>
-<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="develop-logistic-regression-model.html#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="co"># GLM with binomial logit link</span></span>
-<span id="cb22-2"><a href="develop-logistic-regression-model.html#cb22-2" aria-hidden="true" tabindex="-1"></a>logit.model <span class="ot">&lt;-</span> <span class="fu">glm</span>(over_50k <span class="sc">~</span> marital_status <span class="sc">+</span> education_level <span class="sc">+</span>                 capital_gain_indicator <span class="sc">+</span> occupation <span class="sc">+</span> hours_week_bin <span class="sc">+</span> age_bin <span class="sc">+</span>                 capital_loss_indicator <span class="sc">+</span> workclass <span class="sc">+</span> country_bin <span class="sc">+</span> race <span class="sc">+</span>     </span>
-<span id="cb22-3"><a href="develop-logistic-regression-model.html#cb22-3" aria-hidden="true" tabindex="-1"></a>    occupation<span class="sc">*</span>hours_week_bin, <span class="at">data =</span> train, <span class="at">family =</span> <span class="fu">binomial</span>(<span class="at">link =</span> <span class="st">&quot;logit&quot;</span>))</span>
-<span id="cb22-4"><a href="develop-logistic-regression-model.html#cb22-4" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(logit.model)</span></code></pre></div>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="develop-logistic-regression-model.html#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># GLM with binomial logit link</span></span>
+<span id="cb15-2"><a href="develop-logistic-regression-model.html#cb15-2" aria-hidden="true" tabindex="-1"></a>logit.model <span class="ot">&lt;-</span> <span class="fu">glm</span>(over_50k <span class="sc">~</span> marital_status <span class="sc">+</span> education_level <span class="sc">+</span>                 capital_gain_indicator <span class="sc">+</span> occupation <span class="sc">+</span> hours_week_bin <span class="sc">+</span> age_bin <span class="sc">+</span>                 capital_loss_indicator <span class="sc">+</span> workclass <span class="sc">+</span> country_bin <span class="sc">+</span> race <span class="sc">+</span>     </span>
+<span id="cb15-3"><a href="develop-logistic-regression-model.html#cb15-3" aria-hidden="true" tabindex="-1"></a>    occupation<span class="sc">*</span>hours_week_bin, <span class="at">data =</span> train, <span class="at">family =</span> <span class="fu">binomial</span>(<span class="at">link =</span> <span class="st">&quot;logit&quot;</span>))</span>
+<span id="cb15-4"><a href="develop-logistic-regression-model.html#cb15-4" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(logit.model)</span></code></pre></div>
 <pre><code>## 
 ## Call:
 ## glm(formula = over_50k ~ marital_status + education_level + capital_gain_indicator + 
@@ -597,275 +245,275 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 ## 
 ## Deviance Residuals: 
 ##     Min       1Q   Median       3Q      Max  
-## -2.8286  -0.5061  -0.2020  -0.0499   3.6679  
+## -2.7685  -0.5126  -0.2043  -0.0527   3.5227  
 ## 
 ## Coefficients:
-##                                              Estimate Std. Error z value Pr(&gt;|z|)    
-## (Intercept)                                 -6.831206   0.938285  -7.281 3.33e-13 ***
-## marital_statusMarried-AF-spouse              2.986659   0.497870   5.999 1.99e-09 ***
-## marital_statusMarried-civ-spouse             2.292346   0.059917  38.259  &lt; 2e-16 ***
-## marital_statusMarried-spouse-absent          0.222188   0.207847   1.069 0.285072    
-## marital_statusNever-married                 -0.178810   0.077059  -2.320 0.020318 *  
-## marital_statusSeparated                     -0.068608   0.151761  -0.452 0.651211    
-## marital_statusWidowed                        0.233976   0.138564   1.689 0.091300 .  
-## education_level11th                         -0.077062   0.216688  -0.356 0.722113    
-## education_level12th                          0.583845   0.252680   2.311 0.020855 *  
-## education_level5th-6th                      -0.147566   0.292611  -0.504 0.614045    
-## education_level7th-8th                      -0.369917   0.229021  -1.615 0.106265    
-## education_level9th                          -0.128730   0.253854  -0.507 0.612081    
-## education_levelAssoc-acdm                    1.535057   0.176804   8.682  &lt; 2e-16 ***
-## education_levelAssoc-voc                     1.312912   0.170999   7.678 1.62e-14 ***
-## education_levelBachelors                     2.037348   0.159922  12.740  &lt; 2e-16 ***
-## education_levelDoctorate                     3.009879   0.209866  14.342  &lt; 2e-16 ***
-## education_levelEarly-Ed                     -0.958737   0.468309  -2.047 0.040635 *  
-## education_levelHS-grad                       0.875185   0.156189   5.603 2.10e-08 ***
-## education_levelMasters                       2.388668   0.169043  14.131  &lt; 2e-16 ***
-## education_levelProf-school                   3.089082   0.199522  15.482  &lt; 2e-16 ***
-## education_levelSome-college                  1.227385   0.158263   7.755 8.81e-15 ***
-## capital_gain_indicator                       1.728841   0.054839  31.526  &lt; 2e-16 ***
-## occupationAdm-clerical                       0.540457   0.896058   0.603 0.546409    
-## occupationCraft-repair                       0.153790   0.909201   0.169 0.865680    
-## occupationExec-managerial                    0.875722   0.898277   0.975 0.329614    
-## occupationFarming-fishing                   -1.038040   1.008076  -1.030 0.303139    
-## occupationHandlers-cleaners                 -0.796331   0.971819  -0.819 0.412545    
-## occupationMachine-op-inspct                 -0.759718   0.994069  -0.764 0.444718    
-## occupationOther-service                     -0.158549   0.904909  -0.175 0.860915    
-## occupationProf-specialty                     0.941148   0.893684   1.053 0.292290    
-## occupationProtective-serv                   -0.006456   0.992684  -0.007 0.994811    
-## occupationSales                              0.522804   0.898595   0.582 0.560700    
-## occupationTech-support                       1.119201   0.916606   1.221 0.222076    
-## occupationTransport-moving                   0.125140   0.912263   0.137 0.890892    
-## hours_week_bin1                              0.762878   0.205619   3.710 0.000207 ***
-## hours_week_bin2                              1.249429   0.242599   5.150 2.60e-07 ***
-## age_bin1                                     1.044658   0.059929  17.432  &lt; 2e-16 ***
-## age_bin2                                     1.473089   0.061865  23.811  &lt; 2e-16 ***
-## age_bin3                                     1.223073   0.072499  16.870  &lt; 2e-16 ***
-## capital_loss_indicator                       1.126312   0.068570  16.426  &lt; 2e-16 ***
-## workclassLocal-gov                          -0.680749   0.107648  -6.324 2.55e-10 ***
-## workclassPrivate                            -0.404421   0.089348  -4.526 6.00e-06 ***
-## workclassSelf-emp-inc                       -0.228541   0.116617  -1.960 0.050024 .  
-## workclassSelf-emp-not-inc                   -0.816660   0.105372  -7.750 9.17e-15 ***
-## workclassState-gov                          -0.766890   0.117979  -6.500 8.02e-11 ***
-## workclassUnknown                            -0.599369   0.881418  -0.680 0.496501    
-## country_bin                                  0.181470   0.067343   2.695 0.007044 ** 
-## raceAsian-Pac-Islander                       0.697452   0.251725   2.771 0.005594 ** 
-## raceBlack                                    0.612091   0.237392   2.578 0.009926 ** 
-## raceOther                                    0.765299   0.323418   2.366 0.017968 *  
-## raceWhite                                    0.782244   0.228531   3.423 0.000620 ***
-## occupationAdm-clerical:hours_week_bin1      -0.362471   0.253838  -1.428 0.153303    
-## occupationCraft-repair:hours_week_bin1       0.083620   0.287675   0.291 0.771301    
-## occupationExec-managerial:hours_week_bin1   -0.035255   0.253196  -0.139 0.889260    
-## occupationFarming-fishing:hours_week_bin1    0.447424   0.570564   0.784 0.432936    
-## occupationHandlers-cleaners:hours_week_bin1  0.364163   0.467594   0.779 0.436096    
-## occupationMachine-op-inspct:hours_week_bin1  0.604546   0.521029   1.160 0.245929    
-## occupationOther-service:hours_week_bin1     -0.690803   0.305468  -2.261 0.023731 *  
-## occupationProf-specialty:hours_week_bin1    -0.124899   0.236012  -0.529 0.596663    
-## occupationProtective-serv:hours_week_bin1    0.974678   0.505473   1.928 0.053824 .  
-## occupationSales:hours_week_bin1             -0.161740   0.259686  -0.623 0.533395    
-## occupationTech-support:hours_week_bin1      -0.552405   0.326985  -1.689 0.091145 .  
-## occupationTransport-moving:hours_week_bin1  -0.126269   0.351818  -0.359 0.719668    
-## occupationAdm-clerical:hours_week_bin2      -0.349181   0.299157  -1.167 0.243123    
-## occupationCraft-repair:hours_week_bin2      -0.042651   0.318005  -0.134 0.893306    
-## occupationExec-managerial:hours_week_bin2    0.069903   0.282509   0.247 0.804570    
-## occupationFarming-fishing:hours_week_bin2    0.399728   0.556985   0.718 0.472965    
-## occupationHandlers-cleaners:hours_week_bin2 -0.010766   0.522460  -0.021 0.983559    
-## occupationMachine-op-inspct:hours_week_bin2  0.518360   0.547075   0.948 0.343379    
-## occupationOther-service:hours_week_bin2     -0.319017   0.347004  -0.919 0.357914    
-## occupationProf-specialty:hours_week_bin2    -0.528663   0.269164  -1.964 0.049519 *  
-## occupationProtective-serv:hours_week_bin2    0.844580   0.533124   1.584 0.113146    
-## occupationSales:hours_week_bin2             -0.082531   0.285482  -0.289 0.772511    
-## occupationTech-support:hours_week_bin2      -0.389574   0.372599  -1.046 0.295765    
-## occupationTransport-moving:hours_week_bin2  -0.027486   0.370601  -0.074 0.940878    
+##                                               Estimate Std. Error z value Pr(&gt;|z|)    
+## (Intercept)                                 -5.5019233  1.1384240  -4.833 1.35e-06 ***
+## marital_statusMarried-AF-spouse              2.4567360  0.4942194   4.971 6.66e-07 ***
+## marital_statusMarried-civ-spouse             2.2708142  0.0594819  38.177  &lt; 2e-16 ***
+## marital_statusMarried-spouse-absent          0.2331385  0.1998541   1.167  0.24339    
+## marital_statusNever-married                 -0.1372397  0.0760122  -1.805  0.07100 .  
+## marital_statusSeparated                     -0.0771906  0.1485700  -0.520  0.60337    
+## marital_statusWidowed                        0.2162612  0.1353538   1.598  0.11010    
+## education_level11th                         -0.0004525  0.2058609  -0.002  0.99825    
+## education_level12th                          0.5455755  0.2499226   2.183  0.02904 *  
+## education_level5th-6th                      -0.3950432  0.3018824  -1.309  0.19067    
+## education_level7th-8th                      -0.4335397  0.2205075  -1.966  0.04929 *  
+## education_level9th                          -0.5958271  0.2637695  -2.259  0.02389 *  
+## education_levelAssoc-acdm                    1.3238604  0.1694649   7.812 5.63e-15 ***
+## education_levelAssoc-voc                     1.2286830  0.1631694   7.530 5.07e-14 ***
+## education_levelBachelors                     1.8703162  0.1516060  12.337  &lt; 2e-16 ***
+## education_levelDoctorate                     2.8596888  0.2020710  14.152  &lt; 2e-16 ***
+## education_levelEarly-Ed                     -0.7827920  0.4337737  -1.805  0.07114 .  
+## education_levelHS-grad                       0.7399556  0.1476078   5.013 5.36e-07 ***
+## education_levelMasters                       2.1514321  0.1608346  13.377  &lt; 2e-16 ***
+## education_levelProf-school                   2.8771576  0.1923141  14.961  &lt; 2e-16 ***
+## education_levelSome-college                  1.0993339  0.1498169   7.338 2.17e-13 ***
+## capital_gain_indicator                       1.7019206  0.0545081  31.223  &lt; 2e-16 ***
+## occupationAdm-clerical                      -0.4395121  1.1063638  -0.397  0.69118    
+## occupationCraft-repair                      -0.9521341  1.1190072  -0.851  0.39484    
+## occupationExec-managerial                    0.1092478  1.1102976   0.098  0.92162    
+## occupationFarming-fishing                   -1.8008076  1.1903892  -1.513  0.13033    
+## occupationHandlers-cleaners                 -2.0582334  1.1906457  -1.729  0.08387 .  
+## occupationMachine-op-inspct                 -1.6468696  1.1804767  -1.395  0.16299    
+## occupationOther-service                     -1.2219740  1.1172313  -1.094  0.27406    
+## occupationProf-specialty                     0.1149432  1.1069977   0.104  0.91730    
+## occupationProtective-serv                   -0.8317505  1.1761105  -0.707  0.47944    
+## occupationSales                             -0.5020593  1.1114258  -0.452  0.65147    
+## occupationTech-support                       0.2339071  1.1235800   0.208  0.83509    
+## occupationTransport-moving                  -0.7927409  1.1214803  -0.707  0.47965    
+## hours_week_bin1                              0.6383133  0.2134081   2.991  0.00278 ** 
+## hours_week_bin2                              1.1151911  0.2514373   4.435 9.20e-06 ***
+## age_bin1                                     1.0250604  0.0593304  17.277  &lt; 2e-16 ***
+## age_bin2                                     1.4673777  0.0612681  23.950  &lt; 2e-16 ***
+## age_bin3                                     1.2226766  0.0716979  17.053  &lt; 2e-16 ***
+## capital_loss_indicator                       1.1125858  0.0689056  16.147  &lt; 2e-16 ***
+## workclassLocal-gov                          -0.6171600  0.1077242  -5.729 1.01e-08 ***
+## workclassPrivate                            -0.3564311  0.0899520  -3.962 7.42e-05 ***
+## workclassSelf-emp-inc                       -0.0972363  0.1174541  -0.828  0.40775    
+## workclassSelf-emp-not-inc                   -0.7577894  0.1056415  -7.173 7.33e-13 ***
+## workclassState-gov                          -0.6857089  0.1187059  -5.777 7.63e-09 ***
+## workclassUnknown                            -1.5940910  1.0969196  -1.453  0.14616    
+## country_bin                                  0.1749891  0.0669126   2.615  0.00892 ** 
+## raceAsian-Pac-Islander                       0.4928537  0.2323218   2.121  0.03389 *  
+## raceBlack                                    0.3985577  0.2169832   1.837  0.06624 .  
+## raceOther                                    0.3174704  0.3202712   0.991  0.32156    
+## raceWhite                                    0.5613457  0.2072047   2.709  0.00675 ** 
+## occupationAdm-clerical:hours_week_bin1      -0.2498372  0.2583998  -0.967  0.33361    
+## occupationCraft-repair:hours_week_bin1       0.2712757  0.2898670   0.936  0.34934    
+## occupationExec-managerial:hours_week_bin1   -0.1100426  0.2567848  -0.429  0.66826    
+## occupationFarming-fishing:hours_week_bin1    0.2560892  0.5495599   0.466  0.64122    
+## occupationHandlers-cleaners:hours_week_bin1  0.7817547  0.5157618   1.516  0.12959    
+## occupationMachine-op-inspct:hours_week_bin1  0.5767818  0.4803223   1.201  0.22982    
+## occupationOther-service:hours_week_bin1     -0.4916005  0.3139800  -1.566  0.11742    
+## occupationProf-specialty:hours_week_bin1    -0.1151010  0.2415777  -0.476  0.63375    
+## occupationProtective-serv:hours_week_bin1    0.8114712  0.4790100   1.694  0.09025 .  
+## occupationSales:hours_week_bin1              0.1271090  0.2661690   0.478  0.63297    
+## occupationTech-support:hours_week_bin1      -0.4213875  0.3232001  -1.304  0.19230    
+## occupationTransport-moving:hours_week_bin1  -0.0160218  0.3578882  -0.045  0.96429    
+## occupationAdm-clerical:hours_week_bin2      -0.2592373  0.3069274  -0.845  0.39832    
+## occupationCraft-repair:hours_week_bin2       0.2757611  0.3214072   0.858  0.39090    
+## occupationExec-managerial:hours_week_bin2    0.0080143  0.2874915   0.028  0.97776    
+## occupationFarming-fishing:hours_week_bin2    0.2870610  0.5323542   0.539  0.58973    
+## occupationHandlers-cleaners:hours_week_bin2  0.5294664  0.5662377   0.935  0.34976    
+## occupationMachine-op-inspct:hours_week_bin2  0.5132940  0.5100220   1.006  0.31422    
+## occupationOther-service:hours_week_bin2     -0.1400107  0.3542101  -0.395  0.69264    
+## occupationProf-specialty:hours_week_bin2    -0.4323419  0.2761633  -1.566  0.11746    
+## occupationProtective-serv:hours_week_bin2    0.7534618  0.5082167   1.483  0.13819    
+## occupationSales:hours_week_bin2              0.0678859  0.2936788   0.231  0.81719    
+## occupationTech-support:hours_week_bin2      -0.4202828  0.3735739  -1.125  0.26058    
+## occupationTransport-moving:hours_week_bin2   0.0705081  0.3779149   0.187  0.85200    
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
 ## 
 ## (Dispersion parameter for binomial family taken to be 1)
 ## 
-##     Null deviance: 37628  on 34188  degrees of freedom
-## Residual deviance: 22390  on 34114  degrees of freedom
-## AIC: 22540
+##     Null deviance: 37679  on 34188  degrees of freedom
+## Residual deviance: 22580  on 34114  degrees of freedom
+## AIC: 22730
 ## 
 ## Number of Fisher Scoring iterations: 7</code></pre>
 </div>
 <div id="evaluate-logistic-regression" class="section level2" number="3.4">
 <h2><span class="header-section-number">3.4</span> Evaluate logistic regression</h2>
 <p>View Coefficient of Discrimination (R2)</p>
-<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="develop-logistic-regression-model.html#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Get coefficient of discrimination (R2)</span></span>
-<span id="cb24-2"><a href="develop-logistic-regression-model.html#cb24-2" aria-hidden="true" tabindex="-1"></a>train<span class="sc">$</span>p_hat <span class="ot">=</span> <span class="fu">predict</span>(logit.model, <span class="at">type =</span> <span class="st">&#39;response&#39;</span>)</span>
-<span id="cb24-3"><a href="develop-logistic-regression-model.html#cb24-3" aria-hidden="true" tabindex="-1"></a>p1 <span class="ot">=</span> train<span class="sc">$</span>p_hat[train<span class="sc">$</span>over_50k <span class="sc">==</span> <span class="dv">1</span>]</span>
-<span id="cb24-4"><a href="develop-logistic-regression-model.html#cb24-4" aria-hidden="true" tabindex="-1"></a>p0 <span class="ot">=</span> train<span class="sc">$</span>p_hat[train<span class="sc">$</span>over_50k <span class="sc">==</span> <span class="dv">0</span>]</span>
-<span id="cb24-5"><a href="develop-logistic-regression-model.html#cb24-5" aria-hidden="true" tabindex="-1"></a>coef_discrim <span class="ot">=</span> <span class="fu">mean</span>(p1) <span class="sc">-</span> <span class="fu">mean</span>(p0)</span>
-<span id="cb24-6"><a href="develop-logistic-regression-model.html#cb24-6" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(coef_discrim)</span></code></pre></div>
-<pre><code>## [1] 0.4280567</code></pre>
-<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb26-1"><a href="develop-logistic-regression-model.html#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Coeff of discrimination = 0.422</span></span>
-<span id="cb26-2"><a href="develop-logistic-regression-model.html#cb26-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb26-3"><a href="develop-logistic-regression-model.html#cb26-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Get proportions of non-buy and buy</span></span>
-<span id="cb26-4"><a href="develop-logistic-regression-model.html#cb26-4" aria-hidden="true" tabindex="-1"></a>prop0 <span class="ot">=</span> <span class="dv">26037</span><span class="sc">/</span><span class="dv">34189</span></span>
-<span id="cb26-5"><a href="develop-logistic-regression-model.html#cb26-5" aria-hidden="true" tabindex="-1"></a>prop1 <span class="ot">=</span> <span class="dv">8152</span><span class="sc">/</span><span class="dv">34189</span></span>
-<span id="cb26-6"><a href="develop-logistic-regression-model.html#cb26-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot probabilities as density plot</span></span>
-<span id="cb26-7"><a href="develop-logistic-regression-model.html#cb26-7" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(train, <span class="fu">aes</span>(p_hat, <span class="at">fill =</span> over_50k)) <span class="sc">+</span></span>
-<span id="cb26-8"><a href="develop-logistic-regression-model.html#cb26-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_density</span>(<span class="at">alpha =</span> <span class="fl">0.7</span>) <span class="sc">+</span></span>
-<span id="cb26-9"><a href="develop-logistic-regression-model.html#cb26-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">&quot;Predicted Probability&quot;</span>,</span>
-<span id="cb26-10"><a href="develop-logistic-regression-model.html#cb26-10" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">&quot;Density&quot;</span>,</span>
-<span id="cb26-11"><a href="develop-logistic-regression-model.html#cb26-11" aria-hidden="true" tabindex="-1"></a>       <span class="at">fill =</span> <span class="st">&quot;Outcome&quot;</span>,</span>
-<span id="cb26-12"><a href="develop-logistic-regression-model.html#cb26-12" aria-hidden="true" tabindex="-1"></a>       <span class="at">title =</span> <span class="fu">paste</span>(<span class="st">&quot;Coefficient of Discrimination = &quot;</span>,</span>
-<span id="cb26-13"><a href="develop-logistic-regression-model.html#cb26-13" aria-hidden="true" tabindex="-1"></a>                     <span class="fu">round</span>(coef_discrim, <span class="dv">3</span>), <span class="at">sep =</span> <span class="st">&quot;&quot;</span>))<span class="sc">+</span></span>
-<span id="cb26-14"><a href="develop-logistic-regression-model.html#cb26-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>( <span class="at">values =</span> <span class="fu">c</span>(<span class="st">&quot;royalblue&quot;</span>,<span class="st">&quot;skyblue&quot;</span>), <span class="at">labels=</span><span class="fu">c</span>(<span class="st">&quot;Not Over 50k&quot;</span>, <span class="st">&quot;Over 50k&quot;</span>))<span class="sc">+</span></span>
-<span id="cb26-15"><a href="develop-logistic-regression-model.html#cb26-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_classic</span>()</span></code></pre></div>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="develop-logistic-regression-model.html#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Get coefficient of discrimination (R2)</span></span>
+<span id="cb17-2"><a href="develop-logistic-regression-model.html#cb17-2" aria-hidden="true" tabindex="-1"></a>train<span class="sc">$</span>p_hat <span class="ot">=</span> <span class="fu">predict</span>(logit.model, <span class="at">type =</span> <span class="st">&#39;response&#39;</span>)</span>
+<span id="cb17-3"><a href="develop-logistic-regression-model.html#cb17-3" aria-hidden="true" tabindex="-1"></a>p1 <span class="ot">=</span> train<span class="sc">$</span>p_hat[train<span class="sc">$</span>over_50k <span class="sc">==</span> <span class="dv">1</span>]</span>
+<span id="cb17-4"><a href="develop-logistic-regression-model.html#cb17-4" aria-hidden="true" tabindex="-1"></a>p0 <span class="ot">=</span> train<span class="sc">$</span>p_hat[train<span class="sc">$</span>over_50k <span class="sc">==</span> <span class="dv">0</span>]</span>
+<span id="cb17-5"><a href="develop-logistic-regression-model.html#cb17-5" aria-hidden="true" tabindex="-1"></a>coef_discrim <span class="ot">=</span> <span class="fu">mean</span>(p1) <span class="sc">-</span> <span class="fu">mean</span>(p0)</span>
+<span id="cb17-6"><a href="develop-logistic-regression-model.html#cb17-6" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(coef_discrim)</span></code></pre></div>
+<pre><code>## [1] 0.4233827</code></pre>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="develop-logistic-regression-model.html#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Coeff of discrimination = 0.422</span></span>
+<span id="cb19-2"><a href="develop-logistic-regression-model.html#cb19-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-3"><a href="develop-logistic-regression-model.html#cb19-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Get proportions of non-buy and buy</span></span>
+<span id="cb19-4"><a href="develop-logistic-regression-model.html#cb19-4" aria-hidden="true" tabindex="-1"></a>prop0 <span class="ot">=</span> <span class="dv">26037</span><span class="sc">/</span><span class="dv">34189</span></span>
+<span id="cb19-5"><a href="develop-logistic-regression-model.html#cb19-5" aria-hidden="true" tabindex="-1"></a>prop1 <span class="ot">=</span> <span class="dv">8152</span><span class="sc">/</span><span class="dv">34189</span></span>
+<span id="cb19-6"><a href="develop-logistic-regression-model.html#cb19-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot probabilities as density plot</span></span>
+<span id="cb19-7"><a href="develop-logistic-regression-model.html#cb19-7" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(train, <span class="fu">aes</span>(p_hat, <span class="at">fill =</span> over_50k)) <span class="sc">+</span></span>
+<span id="cb19-8"><a href="develop-logistic-regression-model.html#cb19-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_density</span>(<span class="at">alpha =</span> <span class="fl">0.7</span>) <span class="sc">+</span></span>
+<span id="cb19-9"><a href="develop-logistic-regression-model.html#cb19-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">&quot;Predicted Probability&quot;</span>,</span>
+<span id="cb19-10"><a href="develop-logistic-regression-model.html#cb19-10" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">&quot;Density&quot;</span>,</span>
+<span id="cb19-11"><a href="develop-logistic-regression-model.html#cb19-11" aria-hidden="true" tabindex="-1"></a>       <span class="at">fill =</span> <span class="st">&quot;Outcome&quot;</span>,</span>
+<span id="cb19-12"><a href="develop-logistic-regression-model.html#cb19-12" aria-hidden="true" tabindex="-1"></a>       <span class="at">title =</span> <span class="fu">paste</span>(<span class="st">&quot;Coefficient of Discrimination = &quot;</span>,</span>
+<span id="cb19-13"><a href="develop-logistic-regression-model.html#cb19-13" aria-hidden="true" tabindex="-1"></a>                     <span class="fu">round</span>(coef_discrim, <span class="dv">3</span>), <span class="at">sep =</span> <span class="st">&quot;&quot;</span>))<span class="sc">+</span></span>
+<span id="cb19-14"><a href="develop-logistic-regression-model.html#cb19-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>( <span class="at">values =</span> <span class="fu">c</span>(<span class="st">&quot;royalblue&quot;</span>,<span class="st">&quot;skyblue&quot;</span>), <span class="at">labels=</span><span class="fu">c</span>(<span class="st">&quot;Not Over 50k&quot;</span>, <span class="st">&quot;Over 50k&quot;</span>))<span class="sc">+</span></span>
+<span id="cb19-15"><a href="develop-logistic-regression-model.html#cb19-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_classic</span>()</span></code></pre></div>
 <p><img src="bookdownproj_files/figure-html/R2-1.png" width="672" /></p>
 <p>Determine optimal cut-off</p>
-<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="develop-logistic-regression-model.html#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Iterate through cut-off values to determine optimal cut-off</span></span>
-<span id="cb27-2"><a href="develop-logistic-regression-model.html#cb27-2" aria-hidden="true" tabindex="-1"></a>train<span class="sc">$</span>p_hat <span class="ot">&lt;-</span> <span class="fu">predict</span>(logit.model, <span class="at">type =</span> <span class="st">&quot;response&quot;</span>)</span>
-<span id="cb27-3"><a href="develop-logistic-regression-model.html#cb27-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb27-4"><a href="develop-logistic-regression-model.html#cb27-4" aria-hidden="true" tabindex="-1"></a>youden <span class="ot">&lt;-</span> <span class="cn">NULL</span></span>
-<span id="cb27-5"><a href="develop-logistic-regression-model.html#cb27-5" aria-hidden="true" tabindex="-1"></a>cutoff <span class="ot">&lt;-</span> <span class="cn">NULL</span></span>
-<span id="cb27-6"><a href="develop-logistic-regression-model.html#cb27-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb27-7"><a href="develop-logistic-regression-model.html#cb27-7" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">49</span>){</span>
-<span id="cb27-8"><a href="develop-logistic-regression-model.html#cb27-8" aria-hidden="true" tabindex="-1"></a>  cutoff <span class="ot">=</span> <span class="fu">c</span>(cutoff, i<span class="sc">/</span><span class="dv">50</span>)</span>
-<span id="cb27-9"><a href="develop-logistic-regression-model.html#cb27-9" aria-hidden="true" tabindex="-1"></a>  youden <span class="ot">&lt;-</span> <span class="fu">c</span>(youden, <span class="fu">youdensIndex</span>(train<span class="sc">$</span>over_50k, train<span class="sc">$</span>p_hat, <span class="at">threshold =</span> i<span class="sc">/</span><span class="dv">50</span>))</span>
-<span id="cb27-10"><a href="develop-logistic-regression-model.html#cb27-10" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb27-11"><a href="develop-logistic-regression-model.html#cb27-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb27-12"><a href="develop-logistic-regression-model.html#cb27-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Print table with lowest Youdens at the top of the list</span></span>
-<span id="cb27-13"><a href="develop-logistic-regression-model.html#cb27-13" aria-hidden="true" tabindex="-1"></a>ctable <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(cutoff, youden)</span>
-<span id="cb27-14"><a href="develop-logistic-regression-model.html#cb27-14" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(ctable[<span class="fu">order</span>(<span class="sc">-</span>youden),])</span></code></pre></div>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="develop-logistic-regression-model.html#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Iterate through cut-off values to determine optimal cut-off</span></span>
+<span id="cb20-2"><a href="develop-logistic-regression-model.html#cb20-2" aria-hidden="true" tabindex="-1"></a>train<span class="sc">$</span>p_hat <span class="ot">&lt;-</span> <span class="fu">predict</span>(logit.model, <span class="at">type =</span> <span class="st">&quot;response&quot;</span>)</span>
+<span id="cb20-3"><a href="develop-logistic-regression-model.html#cb20-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-4"><a href="develop-logistic-regression-model.html#cb20-4" aria-hidden="true" tabindex="-1"></a>youden <span class="ot">&lt;-</span> <span class="cn">NULL</span></span>
+<span id="cb20-5"><a href="develop-logistic-regression-model.html#cb20-5" aria-hidden="true" tabindex="-1"></a>cutoff <span class="ot">&lt;-</span> <span class="cn">NULL</span></span>
+<span id="cb20-6"><a href="develop-logistic-regression-model.html#cb20-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-7"><a href="develop-logistic-regression-model.html#cb20-7" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">49</span>){</span>
+<span id="cb20-8"><a href="develop-logistic-regression-model.html#cb20-8" aria-hidden="true" tabindex="-1"></a>  cutoff <span class="ot">=</span> <span class="fu">c</span>(cutoff, i<span class="sc">/</span><span class="dv">50</span>)</span>
+<span id="cb20-9"><a href="develop-logistic-regression-model.html#cb20-9" aria-hidden="true" tabindex="-1"></a>  youden <span class="ot">&lt;-</span> <span class="fu">c</span>(youden, <span class="fu">youdensIndex</span>(train<span class="sc">$</span>over_50k, train<span class="sc">$</span>p_hat, <span class="at">threshold =</span> i<span class="sc">/</span><span class="dv">50</span>))</span>
+<span id="cb20-10"><a href="develop-logistic-regression-model.html#cb20-10" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb20-11"><a href="develop-logistic-regression-model.html#cb20-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-12"><a href="develop-logistic-regression-model.html#cb20-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Print table with lowest Youdens at the top of the list</span></span>
+<span id="cb20-13"><a href="develop-logistic-regression-model.html#cb20-13" aria-hidden="true" tabindex="-1"></a>ctable <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(cutoff, youden)</span>
+<span id="cb20-14"><a href="develop-logistic-regression-model.html#cb20-14" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(ctable[<span class="fu">order</span>(<span class="sc">-</span>youden),])</span></code></pre></div>
 <pre><code>##    cutoff      youden
-## 11   0.22 0.639972318
-## 12   0.24 0.638420577
-## 10   0.20 0.635384225
-## 9    0.18 0.633670351
-## 13   0.26 0.630615061
-## 8    0.16 0.630123194
-## 14   0.28 0.628273698
-## 15   0.30 0.624164957
-## 7    0.14 0.621438668
-## 16   0.32 0.616868889
-## 17   0.34 0.607300108
-## 6    0.12 0.607226800
-## 18   0.36 0.594787061
-## 19   0.38 0.588021067
-## 5    0.10 0.587466974
-## 20   0.40 0.580892527
-## 21   0.42 0.570955701
-## 4    0.08 0.559269862
-## 22   0.44 0.551496740
-## 23   0.46 0.540729078
-## 24   0.48 0.530681001
-## 25   0.50 0.520288241
-## 3    0.06 0.519084223
-## 26   0.52 0.503338199
-## 27   0.54 0.489320049
-## 28   0.56 0.476470534
-## 29   0.58 0.465220860
-## 2    0.04 0.453448011
-## 30   0.60 0.452797052
-## 31   0.62 0.433781634
-## 32   0.64 0.419999680
-## 33   0.66 0.405947191
-## 34   0.68 0.381713408
-## 35   0.70 0.359072601
-## 36   0.72 0.338306281
-## 1    0.02 0.334254804
-## 37   0.74 0.319220817
-## 38   0.76 0.295709365
-## 39   0.78 0.271530510
-## 40   0.80 0.244778179
-## 41   0.82 0.219697093
-## 42   0.84 0.198474849
-## 43   0.86 0.169786227
-## 44   0.88 0.142571105
-## 45   0.90 0.119545777
-## 46   0.92 0.093304289
-## 47   0.94 0.068459400
-## 48   0.96 0.036274474
-## 49   0.98 0.007500707</code></pre>
-<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb29-1"><a href="develop-logistic-regression-model.html#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Confusion matrix for train using Youden&#39;s Index optimal cut off</span></span>
-<span id="cb29-2"><a href="develop-logistic-regression-model.html#cb29-2" aria-hidden="true" tabindex="-1"></a>train<span class="sc">$</span>classification <span class="ot">=</span> <span class="fu">ifelse</span>(train<span class="sc">$</span>p_hat <span class="sc">&gt;=</span> <span class="fl">0.2</span>, <span class="dv">1</span>, <span class="dv">0</span>)</span>
-<span id="cb29-3"><a href="develop-logistic-regression-model.html#cb29-3" aria-hidden="true" tabindex="-1"></a><span class="fu">confusionMatrix</span>(train<span class="sc">$</span>over_50k, <span class="fu">factor</span>(train<span class="sc">$</span>classification))</span></code></pre></div>
+## 11   0.22 0.636907648
+## 12   0.24 0.634563071
+## 10   0.20 0.632811920
+## 9    0.18 0.629858622
+## 13   0.26 0.627834918
+## 14   0.28 0.625946184
+## 8    0.16 0.624775517
+## 15   0.30 0.618867789
+## 7    0.14 0.617397226
+## 16   0.32 0.612263761
+## 6    0.12 0.604514644
+## 17   0.34 0.600199727
+## 18   0.36 0.592768218
+## 19   0.38 0.585042518
+## 5    0.10 0.580066980
+## 20   0.40 0.579869786
+## 21   0.42 0.565503328
+## 4    0.08 0.556498639
+## 22   0.44 0.551214316
+## 23   0.46 0.538330838
+## 24   0.48 0.528796561
+## 25   0.50 0.513994699
+## 3    0.06 0.512360659
+## 26   0.52 0.501252593
+## 27   0.54 0.484359727
+## 28   0.56 0.474665235
+## 29   0.58 0.461865643
+## 2    0.04 0.450244332
+## 30   0.60 0.444767478
+## 31   0.62 0.429793156
+## 32   0.64 0.414247700
+## 33   0.66 0.397887644
+## 34   0.68 0.369370456
+## 35   0.70 0.352253607
+## 36   0.72 0.333308381
+## 1    0.02 0.332575530
+## 37   0.74 0.309070445
+## 38   0.76 0.284069115
+## 39   0.78 0.264142474
+## 40   0.80 0.235702413
+## 41   0.82 0.210162311
+## 42   0.84 0.191518993
+## 43   0.86 0.165639137
+## 44   0.88 0.140285332
+## 45   0.90 0.117568381
+## 46   0.92 0.090617262
+## 47   0.94 0.064897941
+## 48   0.96 0.033943715
+## 49   0.98 0.007313506</code></pre>
+<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="develop-logistic-regression-model.html#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Confusion matrix for train using Youden&#39;s Index optimal cut off</span></span>
+<span id="cb22-2"><a href="develop-logistic-regression-model.html#cb22-2" aria-hidden="true" tabindex="-1"></a>train<span class="sc">$</span>classification <span class="ot">=</span> <span class="fu">ifelse</span>(train<span class="sc">$</span>p_hat <span class="sc">&gt;=</span> <span class="fl">0.2</span>, <span class="dv">1</span>, <span class="dv">0</span>)</span>
+<span id="cb22-3"><a href="develop-logistic-regression-model.html#cb22-3" aria-hidden="true" tabindex="-1"></a><span class="fu">confusionMatrix</span>(train<span class="sc">$</span>over_50k, <span class="fu">factor</span>(train<span class="sc">$</span>classification))</span></code></pre></div>
 <pre><code>## Confusion Matrix and Statistics
 ## 
 ##           Reference
 ## Prediction     0     1
-##          0 19792  6215
-##          1  1028  7154
+##          0 19725  6260
+##          1  1036  7168
 ##                                           
-##                Accuracy : 0.7881          
-##                  95% CI : (0.7838, 0.7925)
-##     No Information Rate : 0.609           
+##                Accuracy : 0.7866          
+##                  95% CI : (0.7822, 0.7909)
+##     No Information Rate : 0.6072          
 ##     P-Value [Acc &gt; NIR] : &lt; 2.2e-16       
 ##                                           
-##                   Kappa : 0.522           
+##                   Kappa : 0.5196          
 ##                                           
 ##  Mcnemar&#39;s Test P-Value : &lt; 2.2e-16       
 ##                                           
-##             Sensitivity : 0.9506          
-##             Specificity : 0.5351          
-##          Pos Pred Value : 0.7610          
-##          Neg Pred Value : 0.8744          
-##              Prevalence : 0.6090          
-##          Detection Rate : 0.5789          
-##    Detection Prevalence : 0.7607          
-##       Balanced Accuracy : 0.7429          
+##             Sensitivity : 0.9501          
+##             Specificity : 0.5338          
+##          Pos Pred Value : 0.7591          
+##          Neg Pred Value : 0.8737          
+##              Prevalence : 0.6072          
+##          Detection Rate : 0.5769          
+##    Detection Prevalence : 0.7600          
+##       Balanced Accuracy : 0.7420          
 ##                                           
 ##        &#39;Positive&#39; Class : 0               
 ## </code></pre>
 <p>AUROC</p>
-<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb31-1"><a href="develop-logistic-regression-model.html#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Evaluate model using AUROC</span></span>
-<span id="cb31-2"><a href="develop-logistic-regression-model.html#cb31-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-3"><a href="develop-logistic-regression-model.html#cb31-3" aria-hidden="true" tabindex="-1"></a>train<span class="sc">$</span>p_hat <span class="ot">&lt;-</span> <span class="fu">predict</span>(logit.model, <span class="at">type =</span> <span class="st">&quot;response&quot;</span>)</span>
-<span id="cb31-4"><a href="develop-logistic-regression-model.html#cb31-4" aria-hidden="true" tabindex="-1"></a><span class="fu">plotROC</span>(train<span class="sc">$</span>over_50k, train<span class="sc">$</span>p_hat) <span class="co"># 0.902 AUROC</span></span></code></pre></div>
+<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="develop-logistic-regression-model.html#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Evaluate model using AUROC</span></span>
+<span id="cb24-2"><a href="develop-logistic-regression-model.html#cb24-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-3"><a href="develop-logistic-regression-model.html#cb24-3" aria-hidden="true" tabindex="-1"></a>train<span class="sc">$</span>p_hat <span class="ot">&lt;-</span> <span class="fu">predict</span>(logit.model, <span class="at">type =</span> <span class="st">&quot;response&quot;</span>)</span>
+<span id="cb24-4"><a href="develop-logistic-regression-model.html#cb24-4" aria-hidden="true" tabindex="-1"></a><span class="fu">plotROC</span>(train<span class="sc">$</span>over_50k, train<span class="sc">$</span>p_hat) <span class="co"># 0.902 AUROC</span></span></code></pre></div>
 <p><img src="bookdownproj_files/figure-html/AUROC-1.png" width="672" /></p>
 </div>
 <div id="test-training-cut-off-on-validation" class="section level2" number="3.5">
 <h2><span class="header-section-number">3.5</span> Test training cut off on validation</h2>
-<div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb32-1"><a href="develop-logistic-regression-model.html#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Make predictions on validation set</span></span>
-<span id="cb32-2"><a href="develop-logistic-regression-model.html#cb32-2" aria-hidden="true" tabindex="-1"></a>validation<span class="sc">$</span>p_hat <span class="ot">=</span> <span class="fu">predict</span>(logit.model, <span class="at">newdata =</span> validation, <span class="at">type =</span> <span class="st">&#39;response&#39;</span>)</span>
-<span id="cb32-3"><a href="develop-logistic-regression-model.html#cb32-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb32-4"><a href="develop-logistic-regression-model.html#cb32-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Confusion Matrix using Youdens cutoff</span></span>
-<span id="cb32-5"><a href="develop-logistic-regression-model.html#cb32-5" aria-hidden="true" tabindex="-1"></a>validation<span class="sc">$</span>classification <span class="ot">=</span> <span class="fu">ifelse</span>(validation<span class="sc">$</span>p_hat <span class="sc">&gt;=</span> <span class="fl">0.2</span>, <span class="dv">1</span>, <span class="dv">0</span>)</span>
-<span id="cb32-6"><a href="develop-logistic-regression-model.html#cb32-6" aria-hidden="true" tabindex="-1"></a><span class="fu">confusionMatrix</span>(validation<span class="sc">$</span>over_50k, <span class="fu">factor</span>(validation<span class="sc">$</span>classification))</span></code></pre></div>
+<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="develop-logistic-regression-model.html#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Make predictions on validation set</span></span>
+<span id="cb25-2"><a href="develop-logistic-regression-model.html#cb25-2" aria-hidden="true" tabindex="-1"></a>validation<span class="sc">$</span>p_hat <span class="ot">=</span> <span class="fu">predict</span>(logit.model, <span class="at">newdata =</span> validation, <span class="at">type =</span> <span class="st">&#39;response&#39;</span>)</span>
+<span id="cb25-3"><a href="develop-logistic-regression-model.html#cb25-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-4"><a href="develop-logistic-regression-model.html#cb25-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Confusion Matrix using Youdens cutoff</span></span>
+<span id="cb25-5"><a href="develop-logistic-regression-model.html#cb25-5" aria-hidden="true" tabindex="-1"></a>validation<span class="sc">$</span>classification <span class="ot">=</span> <span class="fu">ifelse</span>(validation<span class="sc">$</span>p_hat <span class="sc">&gt;=</span> <span class="fl">0.2</span>, <span class="dv">1</span>, <span class="dv">0</span>)</span>
+<span id="cb25-6"><a href="develop-logistic-regression-model.html#cb25-6" aria-hidden="true" tabindex="-1"></a><span class="fu">confusionMatrix</span>(validation<span class="sc">$</span>over_50k, <span class="fu">factor</span>(validation<span class="sc">$</span>classification))</span></code></pre></div>
 <pre><code>## Confusion Matrix and Statistics
 ## 
 ##           Reference
 ## Prediction    0    1
-##          0 2820  890
-##          1  157 1017
+##          0 2882  865
+##          1  135 1002
 ##                                           
-##                Accuracy : 0.7856          
-##                  95% CI : (0.7738, 0.7971)
-##     No Information Rate : 0.6095          
+##                Accuracy : 0.7952          
+##                  95% CI : (0.7837, 0.8065)
+##     No Information Rate : 0.6177          
 ##     P-Value [Acc &gt; NIR] : &lt; 2.2e-16       
 ##                                           
-##                   Kappa : 0.5162          
+##                   Kappa : 0.5316          
 ##                                           
 ##  Mcnemar&#39;s Test P-Value : &lt; 2.2e-16       
 ##                                           
-##             Sensitivity : 0.9473          
-##             Specificity : 0.5333          
-##          Pos Pred Value : 0.7601          
-##          Neg Pred Value : 0.8663          
-##              Prevalence : 0.6095          
-##          Detection Rate : 0.5774          
-##    Detection Prevalence : 0.7596          
-##       Balanced Accuracy : 0.7403          
+##             Sensitivity : 0.9553          
+##             Specificity : 0.5367          
+##          Pos Pred Value : 0.7691          
+##          Neg Pred Value : 0.8813          
+##              Prevalence : 0.6177          
+##          Detection Rate : 0.5901          
+##    Detection Prevalence : 0.7672          
+##       Balanced Accuracy : 0.7460          
 ##                                           
 ##        &#39;Positive&#39; Class : 0               
 ## </code></pre>
-<div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb34-1"><a href="develop-logistic-regression-model.html#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Get concordance</span></span>
-<span id="cb34-2"><a href="develop-logistic-regression-model.html#cb34-2" aria-hidden="true" tabindex="-1"></a><span class="fu">Concordance</span>(validation<span class="sc">$</span>over_50k, validation<span class="sc">$</span>p_hat)</span></code></pre></div>
+<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="develop-logistic-regression-model.html#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Get concordance</span></span>
+<span id="cb27-2"><a href="develop-logistic-regression-model.html#cb27-2" aria-hidden="true" tabindex="-1"></a><span class="fu">Concordance</span>(validation<span class="sc">$</span>over_50k, validation<span class="sc">$</span>p_hat)</span></code></pre></div>
 <pre><code>## $Concordance
-## [1] 0.8982296
+## [1] 0.9118859
 ## 
 ## $Discordance
-## [1] 0.1017704
+## [1] 0.08811411
 ## 
 ## $Tied
 ## [1] -1.387779e-17
 ## 
 ## $Pairs
-## [1] 4355540</code></pre>
-<div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb36-1"><a href="develop-logistic-regression-model.html#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Evaluate model using AUROC</span></span>
-<span id="cb36-2"><a href="develop-logistic-regression-model.html#cb36-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-3"><a href="develop-logistic-regression-model.html#cb36-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plotROC</span>(validation<span class="sc">$</span>over_50k, validation<span class="sc">$</span>p_hat) <span class="co"># 0.899 AUROC</span></span></code></pre></div>
+## [1] 4260339</code></pre>
+<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb29-1"><a href="develop-logistic-regression-model.html#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Evaluate model using AUROC</span></span>
+<span id="cb29-2"><a href="develop-logistic-regression-model.html#cb29-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-3"><a href="develop-logistic-regression-model.html#cb29-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plotROC</span>(validation<span class="sc">$</span>over_50k, validation<span class="sc">$</span>p_hat) <span class="co"># 0.899 AUROC</span></span></code></pre></div>
 <p><img src="bookdownproj_files/figure-html/AUROC%20Validation-1.png" width="672" /></p>
 </div>
 </div>
