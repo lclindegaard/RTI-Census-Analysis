@@ -1,4 +1,0 @@
-sql-data-consolidation
-clean-data
-exploratory-analysis
-conclusion-write-up

@@ -1,3 +1,41 @@
+--- 
+title: "RTI Take Home Assignment"
+author: "Louise Lindegaard"
+date: "`r Sys.Date()`"
+site: bookdown::bookdown_site
+---
+
+# SQL Data Consolidation
+
+Main objective: Select all variables from the records table and join them with all other tables to consolidate 9 tables into 1
+
+-- The select statement contains 2 data cleaning steps: 
+1. Remove redundant columns 
+2. Rename variables to logical names
+
+```{sql SQL Query, eval=FALSE, include=FALSE}
+-- The select statement contains 2 data cleaning steps: 1. Remove redundant columns 2. Rename variables to logical names
+SELECT r.id as id, over_50k, age, education_num, capital_gain, capital_loss, hours_week, workclass_id, w.name as workclass, education_level_id, e.name as education_level, marital_status_id, m.name as marital_status, occupation_id, o.name as occupation, relationship_id, rel.name as relationship, race_id, races.name as race, sex_id, s.name as sex, country_id, c.name as country
+FROM records as r
+-- The left join includes all observations from the records table
+LEFT JOIN countries as c ON r.country_id = c.id
+LEFT JOIN education_levels as e ON r.education_level_id = e.id
+LEFT JOIN marital_statuses as m ON r.marital_status_id = m.id
+LEFT JOIN occupations as o ON r.occupation_id = o.id
+LEFT JOIN races ON r.race_id = races.id
+LEFT JOIN relationships as rel ON r.relationship_id = rel.id
+LEFT JOIN sexes as s ON r.sex_id = s.id
+LEFT JOIN workclasses as w ON r.workclass_id = w.id;
+-- Per instruction, the above statement was exported to CSV
+```
+
+
+
+
+
+
+<!--chapter:end:index.Rmd-->
+
 # Model Building
 
 # Import data and libraries into R
@@ -97,7 +135,7 @@ census = census[,c('id', 'over_50k', 'age_bin', 'capital_gain_indicator', 'capit
 
 # Check for Quasi Complete Separation
 
-```{r include=FALSE}
+```{r}
 # This loop will print out the column name for any cross table that contains zeros (separation) or < 5 observations
 for (i in 1:13) {
   x = table(census[, i], census$over_50k)
@@ -133,7 +171,7 @@ CrossTable(census$occupation, census$over_50k)
 
 # Split data into training, validation and test
 
-```{r include=FALSE}
+```{r}
 #Split the data into a 70/20/10 training, validation, and test data split.
 train = census %>% sample_frac(0.7)
 test_validation = anti_join(census, train, by = 'id')
@@ -143,7 +181,7 @@ validation = anti_join(test_validation, test, by = 'id')
 
 # Exploratory Statistics on Training Data
 
-```{r include=FALSE}
+```{r}
 prop.table(table(train$over_50k)) # 24 % over 50k
 
 # Explore odds ratio for binary variables
@@ -167,7 +205,7 @@ chisq.test(table(train$over_50k, train$education_level)) # p-value < 2.2e-16
 
 # Check for issues with multi-collinearity
 
-```{r include=FALSE}
+```{r}
 VIF.model=glm(over_50k~.,data=train[,2:13],family = binomial(link = "logit"))
 VIF.model
 # No VIF over 10
@@ -175,7 +213,7 @@ VIF.model
 
 # Variable Selection
 
-```{r echo=TRUE}
+```{r}
 # Stepwise selection to select relevant variables
 full.model <-  glm(over_50k ~ ., data=train[,2:13], family = binomial(link = "logit"))
 empty.model <- glm(over_50k ~ 1, data=train[,2:13], family = binomial(link = "logit"))
@@ -214,7 +252,7 @@ for.model <- step(main.model,
 
 #Create Logistic Regression
 
-```{r echo=TRUE}
+```{r}
 
 # GLM with binomial logit link
 logit.model <- glm(over_50k ~ marital_status + education_level +                 capital_gain_indicator + occupation + hours_week_bin + age_bin +                 capital_loss_indicator + workclass + country_bin + race +     
@@ -227,7 +265,7 @@ summary(logit.model)
 
 # View Coefficient of Discrimination (R2)
 
-```{r echo=TRUE}
+```{r}
 # Get coefficient of discrimination (R2)
 train$p_hat = predict(logit.model, type = 'response')
 p1 = train$p_hat[train$over_50k == 1]
@@ -253,7 +291,7 @@ ggplot(train, aes(p_hat, fill = over_50k)) +
 
 # Determine optimal cut-off
 
-```{r echo=TRUE}
+```{r}
 # Iterate through cut-off values to determine optimal cut-off
 train$p_hat <- predict(logit.model, type = "response")
 
@@ -276,7 +314,7 @@ confusionMatrix(train$over_50k, factor(train$classification))
 
 # AUROC
 
-```{r echo=TRUE}
+```{r}
 # Evaluate model using AUROC
 
 train$p_hat <- predict(logit.model, type = "response")
@@ -286,7 +324,7 @@ plotROC(train$over_50k, train$p_hat) # 0.902 AUROC
 
 # Test training cut off on validation
 
-```{r echo=TRUE}
+```{r}
 # Make predictions on validation set
 validation$p_hat = predict(logit.model, newdata = validation, type = 'response')
 
@@ -305,7 +343,7 @@ plotROC(validation$over_50k, validation$p_hat) # 0.899 AUROC
 
 ## Create XGBoost
 
-```{r include=FALSE}
+```{r}
 #XGBoost model here
 # Prepare data for XGBoost function
 train_x <- model.matrix(over_50k ~ ., data = train)[, 3:53]
@@ -315,7 +353,7 @@ train_y <- as.numeric(as.character(train$over_50k))
 
 # Tuning an XGBoost nrounds parameter - 11 was lowest
 
-```{r echo=TRUE}
+```{r}
 xgbcv <- xgb.cv(data = train_x, label = train_y, subsample = 0.5, nrounds = 100, nfold = 10)
 eval <- xgbcv$evaluation_log
 
@@ -325,7 +363,7 @@ eval %>%
 
 # Tuning through caret
 
-```{r eval=FALSE, include=FALSE}
+```{r}
 tune_grid <- expand.grid(
   nrounds = 11,
   eta = c(0.8, 0.85, 0.9, 0.95),
@@ -336,9 +374,11 @@ tune_grid <- expand.grid(
   subsample = c(0.2, 0.25, 0.3)
 )
 
- Tune XGBoost, but this takes too long to render
-xgb.caret <- train(x = train_x, y = as.factor(train_y), method = "xgbTree", tuneGrid = tune_grid, trControl = trainControl(method = 'cv', # Using 10-fold cross-validation 
-number = 10))
+xgb.caret <- train(x = train_x, y = as.factor(train_y),
+      method = "xgbTree",
+      tuneGrid = tune_grid,
+      trControl = trainControl(method = 'cv', # Using 10-fold cross-validation
+                               number = 10))
 
 plot(xgb.caret)
 xgb.caret
@@ -347,7 +387,7 @@ eta = .9 and subsample = .25, max tree depth = 10
 
 # Variable importance
 
-```{r echo=TRUE}
+```{r}
 
 xgb <- xgboost(data = train_x, label = train_y, subsample = .25, nrounds = 11, eta = 0.9, max_depth = 10)
 
@@ -357,7 +397,7 @@ xgb.ggplot.importance(xgb.importance(feature_names = colnames(train_x), model = 
 ```
 
 ### ROC Curve and AUC
-```{r echo=TRUE}
+```{r}
 # get predictions
 # Prepare data for predict function
 validation_x <- model.matrix(over_50k ~ ., data = validation)[, 3:53]
@@ -375,7 +415,7 @@ ggroc(rocobj, colour = 'steelblue', size = 2) +
 ```
 # Interesting relationship
 
-```{r echo=TRUE}
+```{r}
 # Add color blind palette
 cbPalette = c("#999999", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#D55E00", "#CC79A7")
 
@@ -389,7 +429,7 @@ ggplot(data = train) +
 ```
 # Get final AUROC on test data
 
-```{r echo=TRUE}
+```{r}
 # Make predictions on validation set
 test$p_hat = predict(logit.model, newdata = test, type = 'response')
 
@@ -401,3 +441,26 @@ confusionMatrix(test$over_50k, factor(test$classification))
 table(census$over_50k)
 plotROC(test$over_50k, test$p_hat) # 0.894 AUROC
 ```
+
+<!--chapter:end:02-tears.Rmd-->
+
+# Conclusion / Write Up
+
+Overview
+The goal of this project is to develop a model that predicts whether individuals, based on census variables, make over \$50,000/year. I compared the predictive power of a logistic regression to an XGBoost model using the area under the ROC curve (AUROC). This statistic calculates each models ability to distinguish between people who make above \$50,000/year from those who do not. The logistic regression model resulted in the higher AUROC, and was able to better predict who is likely to make above $50,000/year from census data. The final AUROC on the test data was 0.894.
+
+Methodology
+The first two steps were exploring each variable individually and binning continuous variables into categories. Each variable was then tested for quasi-complete separation. This is a problem when a subgroup of the predictor variable perfectly predicts the target variable outcome. Each subgroup with less than 5 observations was collapsed into a new, larger group. The data was split into a 70/20/10 training/validation/test split and each variable was tested for multi-collinearity to ensure no two variables are providing the same information in the model. Stepwise selection was used to identify which variables were important in predicting the target. The 13 important variables were then used in a forward selection process to identify any predictive interactions. For example, the selection process identified changes in the target variables relationship with hours worked each week when looking at different occupations. A logistic regression was built using these variables. The XGBoost was tuned and built using all census variables, and the most important variables were calculated using a gain statistic. 
+
+Results
+A simple relationship between marital status and people who make over 50k can be pictured in Figure 1. This figure shows the large majority of people who make over 50k are married to civil spouses. In our census data, 85% of people who make over 50k are married to a civil spouse compared to only 33% of those who do not make over 50k. Furthermore, the XGBoost model found marital status to be the most important variable in predicting the target.
+
+The logistic regression was able to better predict people who make over $50,000/year using census variables. I recommend using a logistic regression moving forward to best predict the individuals that make over 50K using census data. Given more time for tuning, you might be able to challenge the predictive power using a future XGBoost model.
+
+
+
+
+*This repo was initially generated from a bookdown template available here: https://github.com/jtr13/bookdown-template.*
+
+<!--chapter:end:03-race.Rmd-->
+
