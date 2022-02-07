@@ -1,5 +1,5 @@
 sql-data-consolidation
-model-building
+variable-cleaning-and-formating
 import-data-and-libraries-into-r
 data-cleaning
 variable-binning
@@ -9,10 +9,8 @@ exploratory-statistics-on-training-data
 develop-logistic-regression-model
 check-for-issues-with-multi-collinearity
 variable-selection
+create-logistic-regression
 evaluate-logistic-regression
-view-coefficient-of-discrimination-r2
-determine-optimal-cut-off
-auroc
 test-training-cut-off-on-validation
 create-xgboost
 tuning-an-xgboost-nrounds-parameter---11-was-lowest
@@ -20,3 +18,5 @@ tuning-through-caret
 variable-importance
 roc-curve-and-auc
 conclusion-write-up
+figure-1
+final-auroc-chart

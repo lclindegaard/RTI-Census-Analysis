@@ -13,7 +13,7 @@ Main objective: Select all variables from the records table and join them with a
 1. Remove redundant columns 
 2. Rename variables to logical names
 
-```{sql SQL Query, eval=FALSE, include=FALSE}
+```{sql SQL Query, eval=FALSE}
 -- The select statement contains 2 data cleaning steps: 1. Remove redundant columns 2. Rename variables to logical names
 SELECT r.id as id, over_50k, age, education_num, capital_gain, capital_loss, hours_week, workclass_id, w.name as workclass, education_level_id, e.name as education_level, marital_status_id, m.name as marital_status, occupation_id, o.name as occupation, relationship_id, rel.name as relationship, race_id, races.name as race, sex_id, s.name as sex, country_id, c.name as country
 FROM records as r

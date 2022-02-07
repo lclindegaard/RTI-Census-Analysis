@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Chapter 4 Create XGBoost | RTI Take Home Assignment</title>
+  <meta name="description" content="Chapter 4 Create XGBoost | RTI Take Home Assignment" />
+  <meta name="generator" content="bookdown 0.24 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="Chapter 4 Create XGBoost | RTI Take Home Assignment" />
+  <meta property="og:type" content="book" />
+  
+  
+  
+  
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Chapter 4 Create XGBoost | RTI Take Home Assignment" />
+  
+  
+  
+
+<meta name="author" content="Louise Lindegaard" />
+
+
+<meta name="date" content="2022-02-06" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="develop-logistic-regression-model.html"/>
+<link rel="next" href="conclusion-write-up.html"/>
+<script src="libs/header-attrs-2.11/header-attrs.js"></script>
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+<link href="libs/anchor-sections-1.0.1/anchor-sections.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.0.1/anchor-sections.js"></script>
+
+
+<style type="text/css">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./">RTI Interview</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> SQL Data Consolidation</a></li>
+<li class="chapter" data-level="2" data-path="variable-cleaning-and-formating.html"><a href="variable-cleaning-and-formating.html"><i class="fa fa-check"></i><b>2</b> Variable Cleaning and Formating</a>
+<ul>
+<li class="chapter" data-level="2.1" data-path="variable-cleaning-and-formating.html"><a href="variable-cleaning-and-formating.html#import-data-and-libraries-into-r"><i class="fa fa-check"></i><b>2.1</b> Import data and libraries into R</a></li>
+<li class="chapter" data-level="2.2" data-path="variable-cleaning-and-formating.html"><a href="variable-cleaning-and-formating.html#data-cleaning"><i class="fa fa-check"></i><b>2.2</b> Data Cleaning</a></li>
+<li class="chapter" data-level="2.3" data-path="variable-cleaning-and-formating.html"><a href="variable-cleaning-and-formating.html#variable-binning"><i class="fa fa-check"></i><b>2.3</b> Variable binning</a></li>
+<li class="chapter" data-level="2.4" data-path="variable-cleaning-and-formating.html"><a href="variable-cleaning-and-formating.html#check-for-quasi-complete-separation"><i class="fa fa-check"></i><b>2.4</b> Check for Quasi Complete Separation</a></li>
+<li class="chapter" data-level="2.5" data-path="variable-cleaning-and-formating.html"><a href="variable-cleaning-and-formating.html#split-data-into-training-validation-and-test"><i class="fa fa-check"></i><b>2.5</b> Split data into training, validation and test</a></li>
+<li class="chapter" data-level="2.6" data-path="variable-cleaning-and-formating.html"><a href="variable-cleaning-and-formating.html#exploratory-statistics-on-training-data"><i class="fa fa-check"></i><b>2.6</b> Exploratory Statistics on Training Data</a></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="develop-logistic-regression-model.html"><a href="develop-logistic-regression-model.html"><i class="fa fa-check"></i><b>3</b> Develop Logistic Regression Model</a>
+<ul>
+<li class="chapter" data-level="3.1" data-path="develop-logistic-regression-model.html"><a href="develop-logistic-regression-model.html#check-for-issues-with-multi-collinearity"><i class="fa fa-check"></i><b>3.1</b> Check for issues with multi-collinearity</a></li>
+<li class="chapter" data-level="3.2" data-path="develop-logistic-regression-model.html"><a href="develop-logistic-regression-model.html#variable-selection"><i class="fa fa-check"></i><b>3.2</b> Variable Selection</a></li>
+<li class="chapter" data-level="3.3" data-path="develop-logistic-regression-model.html"><a href="develop-logistic-regression-model.html#create-logistic-regression"><i class="fa fa-check"></i><b>3.3</b> Create Logistic Regression</a></li>
+<li class="chapter" data-level="3.4" data-path="develop-logistic-regression-model.html"><a href="develop-logistic-regression-model.html#evaluate-logistic-regression"><i class="fa fa-check"></i><b>3.4</b> Evaluate logistic regression</a></li>
+<li class="chapter" data-level="3.5" data-path="develop-logistic-regression-model.html"><a href="develop-logistic-regression-model.html#test-training-cut-off-on-validation"><i class="fa fa-check"></i><b>3.5</b> Test training cut off on validation</a></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="create-xgboost.html"><a href="create-xgboost.html"><i class="fa fa-check"></i><b>4</b> Create XGBoost</a>
+<ul>
+<li class="chapter" data-level="4.1" data-path="create-xgboost.html"><a href="create-xgboost.html#tuning-an-xgboost-nrounds-parameter---11-was-lowest"><i class="fa fa-check"></i><b>4.1</b> Tuning an XGBoost nrounds parameter - 11 was lowest</a></li>
+<li class="chapter" data-level="4.2" data-path="create-xgboost.html"><a href="create-xgboost.html#tuning-through-caret"><i class="fa fa-check"></i><b>4.2</b> Tuning through caret</a></li>
+<li class="chapter" data-level="4.3" data-path="create-xgboost.html"><a href="create-xgboost.html#variable-importance"><i class="fa fa-check"></i><b>4.3</b> Variable importance</a></li>
+<li class="chapter" data-level="4.4" data-path="create-xgboost.html"><a href="create-xgboost.html#roc-curve-and-auc"><i class="fa fa-check"></i><b>4.4</b> ROC Curve and AUC</a></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="conclusion-write-up.html"><a href="conclusion-write-up.html"><i class="fa fa-check"></i><b>5</b> Conclusion / Write Up</a>
+<ul>
+<li class="chapter" data-level="5.1" data-path="conclusion-write-up.html"><a href="conclusion-write-up.html#figure-1"><i class="fa fa-check"></i><b>5.1</b> Figure 1</a></li>
+<li class="chapter" data-level="5.2" data-path="conclusion-write-up.html"><a href="conclusion-write-up.html#final-auroc-chart"><i class="fa fa-check"></i><b>5.2</b> Final AUROC Chart</a></li>
+</ul></li>
+<li class="divider"></li>
+<li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">RTI Take Home Assignment</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="create-xgboost" class="section level1" number="4">
+<h1><span class="header-section-number">Chapter 4</span> Create XGBoost</h1>
+<div id="tuning-an-xgboost-nrounds-parameter---11-was-lowest" class="section level2" number="4.1">
+<h2><span class="header-section-number">4.1</span> Tuning an XGBoost nrounds parameter - 11 was lowest</h2>
+</div>
+<div id="tuning-through-caret" class="section level2" number="4.2">
+<h2><span class="header-section-number">4.2</span> Tuning through caret</h2>
+<p>eta = .9 and subsample = .25, max tree depth = 10</p>
+</div>
+<div id="variable-importance" class="section level2" number="4.3">
+<h2><span class="header-section-number">4.3</span> Variable importance</h2>
+<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="create-xgboost.html#cb27-1" aria-hidden="true" tabindex="-1"></a>xgb <span class="ot">&lt;-</span> <span class="fu">xgboost</span>(<span class="at">data =</span> train_x, <span class="at">label =</span> train_y, <span class="at">subsample =</span> .<span class="dv">25</span>, <span class="at">nrounds =</span> <span class="dv">11</span>, <span class="at">eta =</span> <span class="fl">0.9</span>, <span class="at">max_depth =</span> <span class="dv">10</span>)</span></code></pre></div>
+<pre><code>## [1]  train-rmse:0.340135 
+## [2]  train-rmse:0.336631 
+## [3]  train-rmse:0.333233 
+## [4]  train-rmse:0.333880 
+## [5]  train-rmse:0.336040 
+## [6]  train-rmse:0.337866 
+## [7]  train-rmse:0.339267 
+## [8]  train-rmse:0.339087 
+## [9]  train-rmse:0.339663 
+## [10] train-rmse:0.341031 
+## [11] train-rmse:0.340575</code></pre>
+<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb29-1"><a href="create-xgboost.html#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="fu">xgb.importance</span>(<span class="at">feature_names =</span> <span class="fu">colnames</span>(train_x), <span class="at">model =</span> xgb)</span></code></pre></div>
+<pre><code>##                                 Feature         Gain        Cover   Frequency
+##  1:    marital_statusMarried-civ-spouse 0.2273600229 0.0527439508 0.051390356
+##  2:              capital_gain_indicator 0.0618545038 0.0394778043 0.055614220
+##  3:            occupationProf-specialty 0.0517327803 0.0403882367 0.022175290
+##  4:           occupationExec-managerial 0.0512482996 0.0218074816 0.018303414
+##  5:            education_levelBachelors 0.0429543688 0.0163416706 0.030271031
+##  6:                     hours_week_bin2 0.0362576470 0.0340945649 0.048926434
+##  7:                            age_bin2 0.0299032012 0.0478357662 0.051742344
+##  8:              capital_loss_indicator 0.0298984616 0.0275102839 0.033438930
+##  9:                     hours_week_bin1 0.0291770053 0.0246567381 0.052446322
+## 10:                            age_bin1 0.0259130395 0.0218868362 0.062653995
+## 11:                             sexMale 0.0256835788 0.0163491771 0.048574446
+## 12:           workclassSelf-emp-not-inc 0.0211352929 0.0268625794 0.020415347
+## 13:                            age_bin3 0.0208044869 0.0220037232 0.034142907
+## 14:                         country_bin 0.0194847678 0.0111836264 0.029215065
+## 15:              education_levelHS-grad 0.0176945331 0.0163588283 0.023231257
+## 16:         marital_statusNever-married 0.0165244621 0.0109123197 0.027455121
+## 17:                  workclassLocal-gov 0.0162854398 0.0306522942 0.024287223
+## 18:         education_levelSome-college 0.0162270007 0.0139127787 0.022879268
+## 19:                    workclassPrivate 0.0157738781 0.0122988792 0.032030975
+## 20:              education_levelMasters 0.0152197343 0.0338028834 0.020415347
+## 21:               workclassSelf-emp-inc 0.0150251453 0.0466561719 0.017951426
+## 22:                  workclassState-gov 0.0140412321 0.0152167665 0.019711369
+## 23:            education_levelDoctorate 0.0132824861 0.0417415530 0.011263640
+## 24:                     occupationSales 0.0127450992 0.0271499715 0.014431538
+## 25:                           raceBlack 0.0118962703 0.0120275725 0.018655403
+## 26:              occupationTech-support 0.0116405943 0.0176499479 0.009855685
+## 27:              raceAsian-Pac-Islander 0.0109917840 0.0292689518 0.015135516
+## 28:           education_levelAssoc-acdm 0.0109646437 0.0056985129 0.016895459
+## 29:           occupationProtective-serv 0.0106562593 0.0461242821 0.009855685
+## 30:                           raceWhite 0.0101277694 0.0084920066 0.012319606
+## 31:              occupationCraft-repair 0.0098904895 0.0180960490 0.012671595
+## 32:            education_levelAssoc-voc 0.0091385794 0.0299638401 0.015135516
+## 33:          education_levelProf-school 0.0090272681 0.0240519279 0.009151707
+## 34:           occupationFarming-fishing 0.0071400388 0.0167695416 0.007039775
+## 35:              education_level7th-8th 0.0070718397 0.0048910269 0.005631820
+## 36:              occupationAdm-clerical 0.0066976601 0.0144318001 0.013023583
+## 37:             occupationOther-service 0.0062356669 0.0114002428 0.009503696
+## 38:          occupationTransport-moving 0.0062105558 0.0135224402 0.007743752
+## 39:                  education_level9th 0.0053061415 0.0122913727 0.005279831
+## 40:         occupationMachine-op-inspct 0.0052943682 0.0139181404 0.007391763
+## 41: marital_statusMarried-spouse-absent 0.0051963107 0.0033564820 0.007391763
+## 42:             marital_statusSeparated 0.0048160845 0.0024728586 0.008095741
+## 43:               marital_statusWidowed 0.0043967105 0.0031784705 0.006687786
+## 44:                 education_level11th 0.0038172565 0.0078507363 0.006687786
+## 45:     marital_statusMarried-AF-spouse 0.0038155091 0.0305868803 0.003871876
+## 46:         occupationHandlers-cleaners 0.0033002506 0.0094732146 0.004927842
+## 47:                    workclassUnknown 0.0030600390 0.0027323694 0.004575854
+## 48:              education_level5th-6th 0.0024772236 0.0031387932 0.003519887
+## 49:                 education_level12th 0.0023901030 0.0019731396 0.002463921
+## 50:                           raceOther 0.0019639058 0.0043344729 0.002463921
+## 51:             education_levelEarly-Ed 0.0002502108 0.0004600418 0.001055966
+##                                 Feature         Gain        Cover   Frequency</code></pre>
+<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb31-1"><a href="create-xgboost.html#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="fu">xgb.ggplot.importance</span>(<span class="fu">xgb.importance</span>(<span class="at">feature_names =</span> <span class="fu">colnames</span>(train_x), <span class="at">model =</span> xgb))</span></code></pre></div>
+<p><img src="bookdownproj_files/figure-html/Create%20XGBoost%20and%20Var%20Imp-1.png" width="672" /></p>
+</div>
+<div id="roc-curve-and-auc" class="section level2" number="4.4">
+<h2><span class="header-section-number">4.4</span> ROC Curve and AUC</h2>
+<div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb32-1"><a href="create-xgboost.html#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="co"># get predictions</span></span>
+<span id="cb32-2"><a href="create-xgboost.html#cb32-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Prepare data for predict function</span></span>
+<span id="cb32-3"><a href="create-xgboost.html#cb32-3" aria-hidden="true" tabindex="-1"></a>validation_x <span class="ot">&lt;-</span> <span class="fu">model.matrix</span>(over_50k <span class="sc">~</span> ., <span class="at">data =</span> validation)[, <span class="dv">3</span><span class="sc">:</span><span class="dv">53</span>]</span>
+<span id="cb32-4"><a href="create-xgboost.html#cb32-4" aria-hidden="true" tabindex="-1"></a>validation_y <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(<span class="fu">as.character</span>(validation<span class="sc">$</span>over_50k))</span>
+<span id="cb32-5"><a href="create-xgboost.html#cb32-5" aria-hidden="true" tabindex="-1"></a>p_hat_xgb <span class="ot">&lt;-</span> <span class="fu">predict</span>(xgb, <span class="at">newdata =</span> validation_x, <span class="at">type =</span> <span class="st">&quot;response&quot;</span>)</span>
+<span id="cb32-6"><a href="create-xgboost.html#cb32-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-7"><a href="create-xgboost.html#cb32-7" aria-hidden="true" tabindex="-1"></a><span class="co"># create ROC object</span></span>
+<span id="cb32-8"><a href="create-xgboost.html#cb32-8" aria-hidden="true" tabindex="-1"></a>rocobj <span class="ot">&lt;-</span> <span class="fu">roc</span>(validation<span class="sc">$</span>over_50k, p_hat_xgb)</span></code></pre></div>
+<pre><code>## Setting levels: control = 0, case = 1</code></pre>
+<pre><code>## Setting direction: controls &lt; cases</code></pre>
+<div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb35-1"><a href="create-xgboost.html#cb35-1" aria-hidden="true" tabindex="-1"></a>rocobj<span class="sc">$</span>auc <span class="co"># to get AUC - 0.816</span></span></code></pre></div>
+<pre><code>## Area under the curve: 0.8379</code></pre>
+<div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb37-1"><a href="create-xgboost.html#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="co"># create ROC plot with minimal theme</span></span>
+<span id="cb37-2"><a href="create-xgboost.html#cb37-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggroc</span>(rocobj, <span class="at">colour =</span> <span class="st">&#39;steelblue&#39;</span>, <span class="at">size =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb37-3"><a href="create-xgboost.html#cb37-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="fu">paste0</span>(<span class="st">&#39;XGBoost Model ROC Curve &#39;</span>, <span class="st">&#39;(AUC = &#39;</span>, <span class="fu">round</span>(rocobj<span class="sc">$</span>auc, <span class="dv">4</span>), <span class="st">&#39;)&#39;</span>)) <span class="sc">+</span></span>
+<span id="cb37-4"><a href="create-xgboost.html#cb37-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()<span class="sc">+</span> <span class="fu">labs</span>(<span class="at">x=</span><span class="st">&quot;1-Specificity (FPR)&quot;</span>,<span class="at">y=</span><span class="st">&quot;Sensitivity (TPR)&quot;</span>)<span class="sc">+</span><span class="fu">geom_abline</span>(<span class="at">intercept =</span> <span class="fl">1.00</span>, <span class="at">size =</span> <span class="fl">0.5</span>, <span class="at">linetype=</span><span class="st">&quot;dotted&quot;</span>, <span class="at">color =</span> <span class="st">&quot;red&quot;</span>)<span class="sc">+</span> <span class="fu">coord_cartesian</span>(<span class="at">xlim=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">0</span>))</span></code></pre></div>
+<p><img src="bookdownproj_files/figure-html/AUROC%20XGBoost-1.png" width="672" /></p>
+
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="develop-logistic-regression-model.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="conclusion-write-up.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": false,
+"facebook": true,
+"twitter": true,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"whatsapp": false,
+"all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": "https://github.com/lclindegaard/RTI-Census-Analysis/edit/master/02-tears.Rmd",
+"text": "Edit"
+},
+"history": {
+"link": null,
+"text": null
+},
+"view": {
+"link": "https://github.com/lclindegaard/RTI-Census-Analysis/blob/master/02-tears.Rmd",
+"text": null
+},
+"download": null,
+"search": {
+"engine": "fuse",
+"options": null
+},
+"toc": {
+"collapse": "subsection"
+}
+});
+});
+</script>
+
+</body>
+
+</html>
