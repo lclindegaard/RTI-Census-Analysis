@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Chapter 15 Tuning an XGBoost nrounds parameter - 11 was lowest | RTI Take Home Assignment</title>
+  <meta name="description" content="Chapter 15 Tuning an XGBoost nrounds parameter - 11 was lowest | RTI Take Home Assignment" />
+  <meta name="generator" content="bookdown 0.24 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="Chapter 15 Tuning an XGBoost nrounds parameter - 11 was lowest | RTI Take Home Assignment" />
+  <meta property="og:type" content="book" />
+  
+  
+  
+  
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Chapter 15 Tuning an XGBoost nrounds parameter - 11 was lowest | RTI Take Home Assignment" />
+  
+  
+  
+
+<meta name="author" content="Louise Lindegaard" />
+
+
+<meta name="date" content="2022-02-06" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="test-training-cut-off-on-validation.html"/>
+<link rel="next" href="tuning-through-caret.html"/>
+<script src="libs/header-attrs-2.11/header-attrs.js"></script>
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+<link href="libs/anchor-sections-1.0.1/anchor-sections.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.0.1/anchor-sections.js"></script>
+
+
+<style type="text/css">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./">RTI Interview</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> SQL Data Consolidation</a></li>
+<li class="chapter" data-level="2" data-path="model-building.html"><a href="model-building.html"><i class="fa fa-check"></i><b>2</b> Model Building</a></li>
+<li class="chapter" data-level="3" data-path="import-data-and-libraries-into-r.html"><a href="import-data-and-libraries-into-r.html"><i class="fa fa-check"></i><b>3</b> Import data and libraries into R</a></li>
+<li class="chapter" data-level="4" data-path="data-cleaning.html"><a href="data-cleaning.html"><i class="fa fa-check"></i><b>4</b> Data Cleaning</a></li>
+<li class="chapter" data-level="5" data-path="variable-binning.html"><a href="variable-binning.html"><i class="fa fa-check"></i><b>5</b> Variable binning</a></li>
+<li class="chapter" data-level="6" data-path="check-for-quasi-complete-separation.html"><a href="check-for-quasi-complete-separation.html"><i class="fa fa-check"></i><b>6</b> Check for Quasi Complete Separation</a></li>
+<li class="chapter" data-level="7" data-path="split-data-into-training-validation-and-test.html"><a href="split-data-into-training-validation-and-test.html"><i class="fa fa-check"></i><b>7</b> Split data into training, validation and test</a></li>
+<li class="chapter" data-level="8" data-path="exploratory-statistics-on-training-data.html"><a href="exploratory-statistics-on-training-data.html"><i class="fa fa-check"></i><b>8</b> Exploratory Statistics on Training Data</a>
+<ul>
+<li class="chapter" data-level="8.1" data-path="exploratory-statistics-on-training-data.html"><a href="exploratory-statistics-on-training-data.html#develop-logistic-regression-model"><i class="fa fa-check"></i><b>8.1</b> Develop Logistic Regression Model</a></li>
+</ul></li>
+<li class="chapter" data-level="9" data-path="check-for-issues-with-multi-collinearity.html"><a href="check-for-issues-with-multi-collinearity.html"><i class="fa fa-check"></i><b>9</b> Check for issues with multi-collinearity</a></li>
+<li class="chapter" data-level="10" data-path="variable-selection.html"><a href="variable-selection.html"><i class="fa fa-check"></i><b>10</b> Variable Selection</a>
+<ul>
+<li class="chapter" data-level="10.1" data-path="variable-selection.html"><a href="variable-selection.html#evaluate-logistic-regression"><i class="fa fa-check"></i><b>10.1</b> Evaluate logistic regression</a></li>
+</ul></li>
+<li class="chapter" data-level="11" data-path="view-coefficient-of-discrimination-r2.html"><a href="view-coefficient-of-discrimination-r2.html"><i class="fa fa-check"></i><b>11</b> View Coefficient of Discrimination (R2)</a></li>
+<li class="chapter" data-level="12" data-path="determine-optimal-cut-off.html"><a href="determine-optimal-cut-off.html"><i class="fa fa-check"></i><b>12</b> Determine optimal cut-off</a></li>
+<li class="chapter" data-level="13" data-path="auroc.html"><a href="auroc.html"><i class="fa fa-check"></i><b>13</b> AUROC</a></li>
+<li class="chapter" data-level="14" data-path="test-training-cut-off-on-validation.html"><a href="test-training-cut-off-on-validation.html"><i class="fa fa-check"></i><b>14</b> Test training cut off on validation</a>
+<ul>
+<li class="chapter" data-level="14.1" data-path="test-training-cut-off-on-validation.html"><a href="test-training-cut-off-on-validation.html#create-xgboost"><i class="fa fa-check"></i><b>14.1</b> Create XGBoost</a></li>
+</ul></li>
+<li class="chapter" data-level="15" data-path="tuning-an-xgboost-nrounds-parameter---11-was-lowest.html"><a href="tuning-an-xgboost-nrounds-parameter---11-was-lowest.html"><i class="fa fa-check"></i><b>15</b> Tuning an XGBoost nrounds parameter - 11 was lowest</a></li>
+<li class="chapter" data-level="16" data-path="tuning-through-caret.html"><a href="tuning-through-caret.html"><i class="fa fa-check"></i><b>16</b> Tuning through caret</a></li>
+<li class="chapter" data-level="17" data-path="variable-importance.html"><a href="variable-importance.html"><i class="fa fa-check"></i><b>17</b> Variable importance</a>
+<ul>
+<li class="chapter" data-level="17.0.1" data-path="variable-importance.html"><a href="variable-importance.html#roc-curve-and-auc"><i class="fa fa-check"></i><b>17.0.1</b> ROC Curve and AUC</a></li>
+</ul></li>
+<li class="chapter" data-level="18" data-path="conclusion-write-up.html"><a href="conclusion-write-up.html"><i class="fa fa-check"></i><b>18</b> Conclusion / Write Up</a></li>
+<li class="divider"></li>
+<li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">RTI Take Home Assignment</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="tuning-an-xgboost-nrounds-parameter---11-was-lowest" class="section level1" number="15">
+<h1><span class="header-section-number">Chapter 15</span> Tuning an XGBoost nrounds parameter - 11 was lowest</h1>
+<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="tuning-an-xgboost-nrounds-parameter---11-was-lowest.html#cb27-1" aria-hidden="true" tabindex="-1"></a>xgbcv <span class="ot">&lt;-</span> <span class="fu">xgb.cv</span>(<span class="at">data =</span> train_x, <span class="at">label =</span> train_y, <span class="at">subsample =</span> <span class="fl">0.5</span>, <span class="at">nrounds =</span> <span class="dv">100</span>, <span class="at">nfold =</span> <span class="dv">10</span>)</span></code></pre></div>
+<pre><code>## [1]  train-rmse:0.426840+0.000232    test-rmse:0.427665+0.001046 
+## [2]  train-rmse:0.384976+0.000432    test-rmse:0.386772+0.001776 
+## [3]  train-rmse:0.360679+0.000437    test-rmse:0.363177+0.002416 
+## [4]  train-rmse:0.346871+0.000389    test-rmse:0.350217+0.002977 
+## [5]  train-rmse:0.338734+0.000533    test-rmse:0.342838+0.003107 
+## [6]  train-rmse:0.333629+0.000644    test-rmse:0.338377+0.003073 
+## [7]  train-rmse:0.330259+0.000658    test-rmse:0.335733+0.003201 
+## [8]  train-rmse:0.327933+0.000552    test-rmse:0.333956+0.003372 
+## [9]  train-rmse:0.326167+0.000531    test-rmse:0.332774+0.003391 
+## [10] train-rmse:0.324766+0.000464    test-rmse:0.331928+0.003512 
+## [11] train-rmse:0.323627+0.000540    test-rmse:0.331301+0.003705 
+## [12] train-rmse:0.322550+0.000492    test-rmse:0.330725+0.003750 
+## [13] train-rmse:0.321755+0.000592    test-rmse:0.330306+0.003595 
+## [14] train-rmse:0.321052+0.000560    test-rmse:0.329969+0.003717 
+## [15] train-rmse:0.320408+0.000533    test-rmse:0.329763+0.003688 
+## [16] train-rmse:0.319800+0.000527    test-rmse:0.329478+0.003830 
+## [17] train-rmse:0.319255+0.000526    test-rmse:0.329329+0.003811 
+## [18] train-rmse:0.318685+0.000524    test-rmse:0.329212+0.003779 
+## [19] train-rmse:0.318145+0.000561    test-rmse:0.329060+0.003889 
+## [20] train-rmse:0.317699+0.000574    test-rmse:0.328972+0.003837 
+## [21] train-rmse:0.317193+0.000592    test-rmse:0.328868+0.003736 
+## [22] train-rmse:0.316739+0.000598    test-rmse:0.328735+0.003772 
+## [23] train-rmse:0.316317+0.000622    test-rmse:0.328825+0.003711 
+## [24] train-rmse:0.315821+0.000558    test-rmse:0.328636+0.003893 
+## [25] train-rmse:0.315466+0.000566    test-rmse:0.328692+0.003921 
+## [26] train-rmse:0.315099+0.000585    test-rmse:0.328802+0.003921 
+## [27] train-rmse:0.314731+0.000581    test-rmse:0.328724+0.004030 
+## [28] train-rmse:0.314425+0.000607    test-rmse:0.328849+0.003944 
+## [29] train-rmse:0.314086+0.000627    test-rmse:0.328978+0.003958 
+## [30] train-rmse:0.313740+0.000599    test-rmse:0.328968+0.003921 
+## [31] train-rmse:0.313386+0.000558    test-rmse:0.329079+0.003938 
+## [32] train-rmse:0.313079+0.000511    test-rmse:0.329087+0.004007 
+## [33] train-rmse:0.312777+0.000540    test-rmse:0.329146+0.003950 
+## [34] train-rmse:0.312540+0.000526    test-rmse:0.329225+0.004006 
+## [35] train-rmse:0.312222+0.000540    test-rmse:0.329378+0.003934 
+## [36] train-rmse:0.311916+0.000531    test-rmse:0.329511+0.003921 
+## [37] train-rmse:0.311646+0.000550    test-rmse:0.329633+0.003869 
+## [38] train-rmse:0.311363+0.000558    test-rmse:0.329543+0.003799 
+## [39] train-rmse:0.311122+0.000576    test-rmse:0.329627+0.003816 
+## [40] train-rmse:0.310848+0.000544    test-rmse:0.329724+0.003792 
+## [41] train-rmse:0.310597+0.000554    test-rmse:0.329746+0.003827 
+## [42] train-rmse:0.310347+0.000570    test-rmse:0.329719+0.003760 
+## [43] train-rmse:0.310070+0.000557    test-rmse:0.329798+0.003714 
+## [44] train-rmse:0.309825+0.000515    test-rmse:0.329859+0.003721 
+## [45] train-rmse:0.309575+0.000533    test-rmse:0.329846+0.003761 
+## [46] train-rmse:0.309304+0.000523    test-rmse:0.329927+0.003758 
+## [47] train-rmse:0.309099+0.000570    test-rmse:0.330027+0.003832 
+## [48] train-rmse:0.308863+0.000558    test-rmse:0.330117+0.003760 
+## [49] train-rmse:0.308646+0.000576    test-rmse:0.330215+0.003706 
+## [50] train-rmse:0.308420+0.000595    test-rmse:0.330305+0.003614 
+## [51] train-rmse:0.308181+0.000628    test-rmse:0.330435+0.003679 
+## [52] train-rmse:0.307930+0.000630    test-rmse:0.330536+0.003804 
+## [53] train-rmse:0.307715+0.000618    test-rmse:0.330612+0.003800 
+## [54] train-rmse:0.307524+0.000576    test-rmse:0.330678+0.003831 
+## [55] train-rmse:0.307321+0.000601    test-rmse:0.330798+0.003766 
+## [56] train-rmse:0.307089+0.000629    test-rmse:0.330875+0.003751 
+## [57] train-rmse:0.306909+0.000626    test-rmse:0.330974+0.003783 
+## [58] train-rmse:0.306700+0.000628    test-rmse:0.331054+0.003777 
+## [59] train-rmse:0.306487+0.000653    test-rmse:0.331138+0.003767 
+## [60] train-rmse:0.306266+0.000648    test-rmse:0.331266+0.003811 
+## [61] train-rmse:0.306051+0.000656    test-rmse:0.331396+0.003792 
+## [62] train-rmse:0.305848+0.000644    test-rmse:0.331498+0.003953 
+## [63] train-rmse:0.305648+0.000655    test-rmse:0.331642+0.004034 
+## [64] train-rmse:0.305458+0.000692    test-rmse:0.331634+0.004021 
+## [65] train-rmse:0.305284+0.000675    test-rmse:0.331690+0.004069 
+## [66] train-rmse:0.305105+0.000676    test-rmse:0.331891+0.003969 
+## [67] train-rmse:0.304961+0.000708    test-rmse:0.331910+0.003974 
+## [68] train-rmse:0.304762+0.000698    test-rmse:0.332028+0.004098 
+## [69] train-rmse:0.304579+0.000692    test-rmse:0.332084+0.003954 
+## [70] train-rmse:0.304417+0.000679    test-rmse:0.332185+0.004031 
+## [71] train-rmse:0.304231+0.000695    test-rmse:0.332158+0.003977 
+## [72] train-rmse:0.304073+0.000704    test-rmse:0.332192+0.003933 
+## [73] train-rmse:0.303909+0.000702    test-rmse:0.332316+0.003815 
+## [74] train-rmse:0.303727+0.000699    test-rmse:0.332455+0.003829 
+## [75] train-rmse:0.303544+0.000675    test-rmse:0.332600+0.003784 
+## [76] train-rmse:0.303374+0.000681    test-rmse:0.332764+0.003764 
+## [77] train-rmse:0.303202+0.000659    test-rmse:0.332919+0.003756 
+## [78] train-rmse:0.303041+0.000655    test-rmse:0.333017+0.003747 
+## [79] train-rmse:0.302869+0.000661    test-rmse:0.333059+0.003707 
+## [80] train-rmse:0.302694+0.000687    test-rmse:0.333186+0.003636 
+## [81] train-rmse:0.302529+0.000695    test-rmse:0.333153+0.003580 
+## [82] train-rmse:0.302363+0.000701    test-rmse:0.333163+0.003610 
+## [83] train-rmse:0.302234+0.000682    test-rmse:0.333335+0.003591 
+## [84] train-rmse:0.302094+0.000675    test-rmse:0.333487+0.003533 
+## [85] train-rmse:0.301959+0.000674    test-rmse:0.333567+0.003545 
+## [86] train-rmse:0.301796+0.000682    test-rmse:0.333579+0.003587 
+## [87] train-rmse:0.301667+0.000692    test-rmse:0.333679+0.003641 
+## [88] train-rmse:0.301499+0.000682    test-rmse:0.333683+0.003611 
+## [89] train-rmse:0.301335+0.000694    test-rmse:0.333764+0.003702 
+## [90] train-rmse:0.301166+0.000699    test-rmse:0.333808+0.003735 
+## [91] train-rmse:0.301030+0.000721    test-rmse:0.333905+0.003797 
+## [92] train-rmse:0.300870+0.000726    test-rmse:0.333992+0.003836 
+## [93] train-rmse:0.300731+0.000729    test-rmse:0.334053+0.003792 
+## [94] train-rmse:0.300573+0.000770    test-rmse:0.334130+0.003768 
+## [95] train-rmse:0.300432+0.000778    test-rmse:0.334112+0.003810 
+## [96] train-rmse:0.300291+0.000787    test-rmse:0.334160+0.003856 
+## [97] train-rmse:0.300132+0.000798    test-rmse:0.334290+0.003864 
+## [98] train-rmse:0.300011+0.000812    test-rmse:0.334264+0.003900 
+## [99] train-rmse:0.299882+0.000804    test-rmse:0.334285+0.003967 
+## [100]    train-rmse:0.299747+0.000807    test-rmse:0.334416+0.003967</code></pre>
+<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb29-1"><a href="tuning-an-xgboost-nrounds-parameter---11-was-lowest.html#cb29-1" aria-hidden="true" tabindex="-1"></a>eval <span class="ot">&lt;-</span> xgbcv<span class="sc">$</span>evaluation_log</span>
+<span id="cb29-2"><a href="tuning-an-xgboost-nrounds-parameter---11-was-lowest.html#cb29-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-3"><a href="tuning-an-xgboost-nrounds-parameter---11-was-lowest.html#cb29-3" aria-hidden="true" tabindex="-1"></a>eval <span class="sc">%&gt;%</span> </span>
+<span id="cb29-4"><a href="tuning-an-xgboost-nrounds-parameter---11-was-lowest.html#cb29-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(test_rmse_mean)</span></code></pre></div>
+<pre><code>##      iter train_rmse_mean train_rmse_std test_rmse_mean test_rmse_std
+##   1:   24       0.3158214   0.0005578276      0.3286356   0.003893069
+##   2:   25       0.3154657   0.0005663125      0.3286916   0.003920634
+##   3:   27       0.3147308   0.0005806319      0.3287242   0.004030272
+##   4:   22       0.3167393   0.0005978209      0.3287351   0.003771819
+##   5:   26       0.3150990   0.0005849877      0.3288019   0.003920608
+##   6:   23       0.3163171   0.0006218415      0.3288247   0.003710851
+##   7:   28       0.3144252   0.0006071443      0.3288491   0.003943560
+##   8:   21       0.3171933   0.0005916027      0.3288679   0.003735844
+##   9:   30       0.3137397   0.0005991604      0.3289679   0.003921463
+##  10:   20       0.3176994   0.0005743599      0.3289716   0.003837461
+##  11:   29       0.3140862   0.0006265959      0.3289781   0.003957684
+##  12:   19       0.3181450   0.0005605991      0.3290604   0.003888687
+##  13:   31       0.3133860   0.0005584955      0.3290791   0.003937651
+##  14:   32       0.3130792   0.0005113830      0.3290871   0.004006965
+##  15:   33       0.3127771   0.0005401854      0.3291459   0.003950444
+##  16:   18       0.3186845   0.0005239140      0.3292124   0.003779094
+##  17:   34       0.3125404   0.0005256345      0.3292252   0.004005743
+##  18:   17       0.3192552   0.0005262560      0.3293291   0.003811094
+##  19:   35       0.3122218   0.0005403171      0.3293784   0.003933540
+##  20:   16       0.3198003   0.0005266101      0.3294776   0.003830202
+##  21:   36       0.3119158   0.0005310514      0.3295107   0.003920797
+##  22:   38       0.3113634   0.0005583349      0.3295434   0.003798873
+##  23:   39       0.3111218   0.0005758246      0.3296273   0.003816108
+##  24:   37       0.3116455   0.0005495617      0.3296334   0.003868884
+##  25:   42       0.3103465   0.0005698523      0.3297194   0.003759505
+##  26:   40       0.3108476   0.0005438460      0.3297243   0.003791991
+##  27:   41       0.3105969   0.0005541003      0.3297455   0.003827358
+##  28:   15       0.3204085   0.0005330616      0.3297627   0.003687844
+##  29:   43       0.3100699   0.0005565397      0.3297985   0.003713987
+##  30:   45       0.3095754   0.0005331666      0.3298465   0.003760805
+##  31:   44       0.3098246   0.0005151804      0.3298591   0.003721093
+##  32:   46       0.3093040   0.0005234625      0.3299267   0.003758041
+##  33:   14       0.3210524   0.0005603092      0.3299690   0.003717462
+##  34:   47       0.3090993   0.0005704078      0.3300267   0.003832022
+##  35:   48       0.3088633   0.0005584577      0.3301173   0.003760161
+##  36:   49       0.3086459   0.0005759664      0.3302148   0.003706137
+##  37:   50       0.3084196   0.0005945827      0.3303054   0.003614100
+##  38:   13       0.3217546   0.0005920190      0.3303058   0.003595123
+##  39:   51       0.3081808   0.0006284460      0.3304347   0.003678696
+##  40:   52       0.3079299   0.0006298505      0.3305359   0.003803991
+##  41:   53       0.3077150   0.0006183528      0.3306117   0.003800470
+##  42:   54       0.3075245   0.0005764891      0.3306777   0.003831229
+##  43:   12       0.3225500   0.0004915783      0.3307252   0.003750003
+##  44:   55       0.3073208   0.0006012064      0.3307982   0.003766038
+##  45:   56       0.3070886   0.0006294145      0.3308745   0.003751045
+##  46:   57       0.3069094   0.0006258337      0.3309742   0.003782962
+##  47:   58       0.3066996   0.0006277095      0.3310541   0.003777318
+##  48:   59       0.3064866   0.0006530179      0.3311382   0.003766507
+##  49:   60       0.3062665   0.0006479854      0.3312659   0.003811496
+##  50:   11       0.3236271   0.0005404334      0.3313014   0.003704549
+##  51:   61       0.3060507   0.0006564573      0.3313964   0.003792334
+##  52:   62       0.3058477   0.0006438935      0.3314976   0.003953418
+##  53:   64       0.3054581   0.0006917045      0.3316335   0.004020777
+##  54:   63       0.3056478   0.0006553388      0.3316418   0.004033924
+##  55:   65       0.3052844   0.0006751255      0.3316903   0.004068940
+##  56:   66       0.3051053   0.0006760982      0.3318910   0.003968789
+##  57:   67       0.3049608   0.0007082388      0.3319095   0.003974047
+##  58:   10       0.3247662   0.0004644282      0.3319284   0.003512389
+##  59:   68       0.3047616   0.0006981832      0.3320276   0.004097559
+##  60:   69       0.3045787   0.0006916378      0.3320843   0.003953591
+##  61:   71       0.3042306   0.0006945572      0.3321576   0.003976826
+##  62:   70       0.3044171   0.0006787283      0.3321851   0.004031304
+##  63:   72       0.3040735   0.0007039728      0.3321918   0.003933245
+##  64:   73       0.3039087   0.0007018367      0.3323161   0.003815136
+##  65:   74       0.3037270   0.0006994924      0.3324548   0.003828768
+##  66:   75       0.3035436   0.0006746433      0.3325996   0.003783710
+##  67:   76       0.3033738   0.0006812286      0.3327642   0.003763842
+##  68:    9       0.3261674   0.0005309993      0.3327741   0.003391027
+##  69:   77       0.3032020   0.0006593052      0.3329188   0.003756018
+##  70:   78       0.3030407   0.0006552671      0.3330168   0.003746821
+##  71:   79       0.3028690   0.0006607770      0.3330588   0.003707347
+##  72:   81       0.3025286   0.0006950272      0.3331531   0.003580067
+##  73:   82       0.3023634   0.0007014425      0.3331625   0.003610021
+##  74:   80       0.3026944   0.0006870584      0.3331863   0.003636336
+##  75:   83       0.3022343   0.0006819232      0.3333346   0.003590593
+##  76:   84       0.3020942   0.0006747052      0.3334875   0.003532634
+##  77:   85       0.3019587   0.0006737415      0.3335670   0.003545193
+##  78:   86       0.3017960   0.0006823158      0.3335788   0.003587117
+##  79:   87       0.3016670   0.0006916148      0.3336793   0.003640635
+##  80:   88       0.3014986   0.0006821733      0.3336829   0.003611296
+##  81:   89       0.3013353   0.0006942681      0.3337639   0.003702295
+##  82:   90       0.3011662   0.0006985048      0.3338077   0.003735383
+##  83:   91       0.3010305   0.0007208092      0.3339047   0.003797331
+##  84:    8       0.3279327   0.0005516633      0.3339555   0.003372492
+##  85:   92       0.3008702   0.0007258761      0.3339920   0.003836450
+##  86:   93       0.3007315   0.0007289753      0.3340534   0.003792374
+##  87:   95       0.3004316   0.0007779526      0.3341118   0.003809868
+##  88:   94       0.3005725   0.0007699855      0.3341296   0.003768355
+##  89:   96       0.3002910   0.0007867574      0.3341601   0.003856486
+##  90:   98       0.3000108   0.0008115618      0.3342637   0.003899586
+##  91:   99       0.2998825   0.0008044693      0.3342846   0.003966632
+##  92:   97       0.3001317   0.0007980942      0.3342898   0.003863663
+##  93:  100       0.2997468   0.0008074521      0.3344156   0.003967305
+##  94:    7       0.3302589   0.0006583722      0.3357334   0.003200781
+##  95:    6       0.3336293   0.0006442116      0.3383775   0.003072875
+##  96:    5       0.3387344   0.0005330062      0.3428380   0.003106588
+##  97:    4       0.3468706   0.0003885829      0.3502168   0.002976906
+##  98:    3       0.3606789   0.0004372163      0.3631770   0.002415856
+##  99:    2       0.3849757   0.0004321081      0.3867724   0.001775833
+## 100:    1       0.4268404   0.0002318436      0.4276651   0.001046021
+##      iter train_rmse_mean train_rmse_std test_rmse_mean test_rmse_std</code></pre>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="test-training-cut-off-on-validation.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="tuning-through-caret.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": false,
+"facebook": true,
+"twitter": true,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"whatsapp": false,
+"all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": "https://github.com/lclindegaard/RTI-Census-Analysis/edit/master/02-tears.Rmd",
+"text": "Edit"
+},
+"history": {
+"link": null,
+"text": null
+},
+"view": {
+"link": "https://github.com/lclindegaard/RTI-Census-Analysis/blob/master/02-tears.Rmd",
+"text": null
+},
+"download": null,
+"search": {
+"engine": "fuse",
+"options": null
+},
+"toc": {
+"collapse": "subsection"
+}
+});
+});
+</script>
+
+</body>
+
+</html>

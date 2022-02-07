@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Chapter 17 Variable importance | RTI Take Home Assignment</title>
+  <meta name="description" content="Chapter 17 Variable importance | RTI Take Home Assignment" />
+  <meta name="generator" content="bookdown 0.24 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="Chapter 17 Variable importance | RTI Take Home Assignment" />
+  <meta property="og:type" content="book" />
+  
+  
+  
+  
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Chapter 17 Variable importance | RTI Take Home Assignment" />
+  
+  
+  
+
+<meta name="author" content="Louise Lindegaard" />
+
+
+<meta name="date" content="2022-02-06" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="tuning-through-caret.html"/>
+<link rel="next" href="conclusion-write-up.html"/>
+<script src="libs/header-attrs-2.11/header-attrs.js"></script>
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+<link href="libs/anchor-sections-1.0.1/anchor-sections.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.0.1/anchor-sections.js"></script>
+
+
+<style type="text/css">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./">RTI Interview</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> SQL Data Consolidation</a></li>
+<li class="chapter" data-level="2" data-path="model-building.html"><a href="model-building.html"><i class="fa fa-check"></i><b>2</b> Model Building</a></li>
+<li class="chapter" data-level="3" data-path="import-data-and-libraries-into-r.html"><a href="import-data-and-libraries-into-r.html"><i class="fa fa-check"></i><b>3</b> Import data and libraries into R</a></li>
+<li class="chapter" data-level="4" data-path="data-cleaning.html"><a href="data-cleaning.html"><i class="fa fa-check"></i><b>4</b> Data Cleaning</a></li>
+<li class="chapter" data-level="5" data-path="variable-binning.html"><a href="variable-binning.html"><i class="fa fa-check"></i><b>5</b> Variable binning</a></li>
+<li class="chapter" data-level="6" data-path="check-for-quasi-complete-separation.html"><a href="check-for-quasi-complete-separation.html"><i class="fa fa-check"></i><b>6</b> Check for Quasi Complete Separation</a></li>
+<li class="chapter" data-level="7" data-path="split-data-into-training-validation-and-test.html"><a href="split-data-into-training-validation-and-test.html"><i class="fa fa-check"></i><b>7</b> Split data into training, validation and test</a></li>
+<li class="chapter" data-level="8" data-path="exploratory-statistics-on-training-data.html"><a href="exploratory-statistics-on-training-data.html"><i class="fa fa-check"></i><b>8</b> Exploratory Statistics on Training Data</a>
+<ul>
+<li class="chapter" data-level="8.1" data-path="exploratory-statistics-on-training-data.html"><a href="exploratory-statistics-on-training-data.html#develop-logistic-regression-model"><i class="fa fa-check"></i><b>8.1</b> Develop Logistic Regression Model</a></li>
+</ul></li>
+<li class="chapter" data-level="9" data-path="check-for-issues-with-multi-collinearity.html"><a href="check-for-issues-with-multi-collinearity.html"><i class="fa fa-check"></i><b>9</b> Check for issues with multi-collinearity</a></li>
+<li class="chapter" data-level="10" data-path="variable-selection.html"><a href="variable-selection.html"><i class="fa fa-check"></i><b>10</b> Variable Selection</a>
+<ul>
+<li class="chapter" data-level="10.1" data-path="variable-selection.html"><a href="variable-selection.html#evaluate-logistic-regression"><i class="fa fa-check"></i><b>10.1</b> Evaluate logistic regression</a></li>
+</ul></li>
+<li class="chapter" data-level="11" data-path="view-coefficient-of-discrimination-r2.html"><a href="view-coefficient-of-discrimination-r2.html"><i class="fa fa-check"></i><b>11</b> View Coefficient of Discrimination (R2)</a></li>
+<li class="chapter" data-level="12" data-path="determine-optimal-cut-off.html"><a href="determine-optimal-cut-off.html"><i class="fa fa-check"></i><b>12</b> Determine optimal cut-off</a></li>
+<li class="chapter" data-level="13" data-path="auroc.html"><a href="auroc.html"><i class="fa fa-check"></i><b>13</b> AUROC</a></li>
+<li class="chapter" data-level="14" data-path="test-training-cut-off-on-validation.html"><a href="test-training-cut-off-on-validation.html"><i class="fa fa-check"></i><b>14</b> Test training cut off on validation</a>
+<ul>
+<li class="chapter" data-level="14.1" data-path="test-training-cut-off-on-validation.html"><a href="test-training-cut-off-on-validation.html#create-xgboost"><i class="fa fa-check"></i><b>14.1</b> Create XGBoost</a></li>
+</ul></li>
+<li class="chapter" data-level="15" data-path="tuning-an-xgboost-nrounds-parameter---11-was-lowest.html"><a href="tuning-an-xgboost-nrounds-parameter---11-was-lowest.html"><i class="fa fa-check"></i><b>15</b> Tuning an XGBoost nrounds parameter - 11 was lowest</a></li>
+<li class="chapter" data-level="16" data-path="tuning-through-caret.html"><a href="tuning-through-caret.html"><i class="fa fa-check"></i><b>16</b> Tuning through caret</a></li>
+<li class="chapter" data-level="17" data-path="variable-importance.html"><a href="variable-importance.html"><i class="fa fa-check"></i><b>17</b> Variable importance</a>
+<ul>
+<li class="chapter" data-level="17.0.1" data-path="variable-importance.html"><a href="variable-importance.html#roc-curve-and-auc"><i class="fa fa-check"></i><b>17.0.1</b> ROC Curve and AUC</a></li>
+</ul></li>
+<li class="chapter" data-level="18" data-path="conclusion-write-up.html"><a href="conclusion-write-up.html"><i class="fa fa-check"></i><b>18</b> Conclusion / Write Up</a></li>
+<li class="divider"></li>
+<li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">RTI Take Home Assignment</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="variable-importance" class="section level1" number="17">
+<h1><span class="header-section-number">Chapter 17</span> Variable importance</h1>
+<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb31-1"><a href="variable-importance.html#cb31-1" aria-hidden="true" tabindex="-1"></a>xgb <span class="ot">&lt;-</span> <span class="fu">xgboost</span>(<span class="at">data =</span> train_x, <span class="at">label =</span> train_y, <span class="at">subsample =</span> .<span class="dv">25</span>, <span class="at">nrounds =</span> <span class="dv">11</span>, <span class="at">eta =</span> <span class="fl">0.9</span>, <span class="at">max_depth =</span> <span class="dv">10</span>)</span></code></pre></div>
+<pre><code>## [1]  train-rmse:0.342728 
+## [2]  train-rmse:0.338387 
+## [3]  train-rmse:0.339324 
+## [4]  train-rmse:0.340820 
+## [5]  train-rmse:0.342915 
+## [6]  train-rmse:0.344458 
+## [7]  train-rmse:0.344395 
+## [8]  train-rmse:0.345190 
+## [9]  train-rmse:0.345926 
+## [10] train-rmse:0.345981 
+## [11] train-rmse:0.345230</code></pre>
+<div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb33-1"><a href="variable-importance.html#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="fu">xgb.importance</span>(<span class="at">feature_names =</span> <span class="fu">colnames</span>(train_x), <span class="at">model =</span> xgb)</span></code></pre></div>
+<pre><code>##                                 Feature        Gain        Cover   Frequency
+##  1:    marital_statusMarried-civ-spouse 0.202268852 0.0519293656 0.056933842
+##  2:              capital_gain_indicator 0.078395162 0.0508894162 0.054707379
+##  3:            education_levelBachelors 0.040241700 0.0366025437 0.028307888
+##  4:                     hours_week_bin2 0.038085858 0.0404228983 0.042938931
+##  5:                            age_bin2 0.036806225 0.0514450648 0.040394402
+##  6:              education_levelMasters 0.033892330 0.0305801339 0.020674300
+##  7:                            age_bin1 0.032224269 0.0143538963 0.055979644
+##  8:                     hours_week_bin1 0.031400032 0.0157722057 0.072837150
+##  9:            occupationProf-specialty 0.028181312 0.0217989395 0.022264631
+## 10:                             sexMale 0.028044680 0.0118448292 0.040076336
+## 11:           occupationExec-managerial 0.027970869 0.0355852959 0.024491094
+## 12:              capital_loss_indicator 0.025734948 0.0511456199 0.034351145
+## 13:                            age_bin3 0.023024186 0.0257565848 0.030852417
+## 14:                    workclassPrivate 0.022718286 0.0138317595 0.034351145
+## 15:                         country_bin 0.021526396 0.0256787508 0.027035623
+## 16:           workclassSelf-emp-not-inc 0.018706378 0.0428962915 0.019402036
+## 17:         education_levelSome-college 0.017925398 0.0193460859 0.023218830
+## 18:              education_levelHS-grad 0.017679529 0.0143149793 0.021628499
+## 19:              occupationCraft-repair 0.017331588 0.0262495338 0.018765903
+## 20:         marital_statusNever-married 0.016379987 0.0044160014 0.026399491
+## 21:                  workclassState-gov 0.016083814 0.0147884698 0.017175573
+## 22:                  workclassLocal-gov 0.014411399 0.0338297056 0.020038168
+## 23:                           raceBlack 0.013964939 0.0055521623 0.020992366
+## 24:                     occupationSales 0.013078476 0.0136252831 0.017811705
+## 25:              raceAsian-Pac-Islander 0.013009837 0.0163559611 0.016539440
+## 26:            education_levelDoctorate 0.012210119 0.0565237367 0.013040712
+## 27:            education_levelAssoc-voc 0.011658715 0.0215492219 0.014312977
+## 28:              occupationAdm-clerical 0.011005503 0.0064277954 0.011768448
+## 29:              occupationTech-support 0.010573191 0.0120318471 0.011132316
+## 30:           occupationProtective-serv 0.009985635 0.0336740375 0.011132316
+## 31:           education_levelAssoc-acdm 0.009958910 0.0205708911 0.010814249
+## 32:               workclassSelf-emp-inc 0.009895760 0.0225318768 0.014949109
+## 33:                           raceWhite 0.009522610 0.0057597198 0.011132316
+## 34:          occupationTransport-moving 0.009472242 0.0037911669 0.009860051
+## 35:             occupationOther-service 0.009266543 0.0101778832 0.009223919
+## 36:          education_levelProf-school 0.008341388 0.0238410023 0.010178117
+## 37:              education_level7th-8th 0.007373421 0.0121756239 0.005725191
+## 38:                    workclassUnknown 0.006960324 0.0086276884 0.008587786
+## 39:             marital_statusSeparated 0.005908569 0.0043922188 0.009860051
+## 40:               marital_statusWidowed 0.005388384 0.0041922285 0.009860051
+## 41:           occupationFarming-fishing 0.005242445 0.0056894529 0.006997455
+## 42:         occupationHandlers-cleaners 0.004996354 0.0158684172 0.006361323
+## 43:         occupationMachine-op-inspct 0.004397261 0.0012658844 0.006997455
+## 44: marital_statusMarried-spouse-absent 0.004272120 0.0031674135 0.007633588
+## 45:                  education_level9th 0.003855729 0.0042095249 0.004452926
+## 46:                 education_level11th 0.002511712 0.0079639369 0.006361323
+## 47:     marital_statusMarried-AF-spouse 0.002209353 0.0250690507 0.002862595
+## 48:              education_level5th-6th 0.001729555 0.0072374857 0.002226463
+## 49:                           raceOther 0.001550917 0.0003394429 0.002862595
+## 50:             education_levelEarly-Ed 0.001433336 0.0057002632 0.001590331
+## 51:                 education_level12th 0.001193451 0.0082104114 0.001908397
+##                                 Feature        Gain        Cover   Frequency</code></pre>
+<div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb35-1"><a href="variable-importance.html#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="fu">xgb.ggplot.importance</span>(<span class="fu">xgb.importance</span>(<span class="at">feature_names =</span> <span class="fu">colnames</span>(train_x), <span class="at">model =</span> xgb))</span></code></pre></div>
+<p><img src="bookdownproj_files/figure-html/unnamed-chunk-14-1.png" width="672" /></p>
+<div id="roc-curve-and-auc" class="section level3" number="17.0.1">
+<h3><span class="header-section-number">17.0.1</span> ROC Curve and AUC</h3>
+<div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb36-1"><a href="variable-importance.html#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="co"># get predictions</span></span>
+<span id="cb36-2"><a href="variable-importance.html#cb36-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Prepare data for predict function</span></span>
+<span id="cb36-3"><a href="variable-importance.html#cb36-3" aria-hidden="true" tabindex="-1"></a>validation_x <span class="ot">&lt;-</span> <span class="fu">model.matrix</span>(over_50k <span class="sc">~</span> ., <span class="at">data =</span> validation)[, <span class="dv">3</span><span class="sc">:</span><span class="dv">53</span>]</span>
+<span id="cb36-4"><a href="variable-importance.html#cb36-4" aria-hidden="true" tabindex="-1"></a>validation_y <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(<span class="fu">as.character</span>(validation<span class="sc">$</span>over_50k))</span>
+<span id="cb36-5"><a href="variable-importance.html#cb36-5" aria-hidden="true" tabindex="-1"></a>p_hat_xgb <span class="ot">&lt;-</span> <span class="fu">predict</span>(xgb, <span class="at">newdata =</span> validation_x, <span class="at">type =</span> <span class="st">&quot;response&quot;</span>)</span>
+<span id="cb36-6"><a href="variable-importance.html#cb36-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-7"><a href="variable-importance.html#cb36-7" aria-hidden="true" tabindex="-1"></a><span class="co"># create ROC object</span></span>
+<span id="cb36-8"><a href="variable-importance.html#cb36-8" aria-hidden="true" tabindex="-1"></a>rocobj <span class="ot">&lt;-</span> <span class="fu">roc</span>(validation<span class="sc">$</span>over_50k, p_hat_xgb)</span></code></pre></div>
+<pre><code>## Setting levels: control = 0, case = 1</code></pre>
+<pre><code>## Setting direction: controls &lt; cases</code></pre>
+<div class="sourceCode" id="cb39"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb39-1"><a href="variable-importance.html#cb39-1" aria-hidden="true" tabindex="-1"></a>rocobj<span class="sc">$</span>auc <span class="co"># to get AUC - 0.816</span></span></code></pre></div>
+<pre><code>## Area under the curve: 0.831</code></pre>
+<div class="sourceCode" id="cb41"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb41-1"><a href="variable-importance.html#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="co"># create ROC plot with minimal theme</span></span>
+<span id="cb41-2"><a href="variable-importance.html#cb41-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggroc</span>(rocobj, <span class="at">colour =</span> <span class="st">&#39;steelblue&#39;</span>, <span class="at">size =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb41-3"><a href="variable-importance.html#cb41-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="fu">paste0</span>(<span class="st">&#39;XGBoost Model ROC Curve &#39;</span>, <span class="st">&#39;(AUC = &#39;</span>, <span class="fu">round</span>(rocobj<span class="sc">$</span>auc, <span class="dv">4</span>), <span class="st">&#39;)&#39;</span>)) <span class="sc">+</span></span>
+<span id="cb41-4"><a href="variable-importance.html#cb41-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()<span class="sc">+</span> <span class="fu">labs</span>(<span class="at">x=</span><span class="st">&quot;1-Specificity (FPR)&quot;</span>,<span class="at">y=</span><span class="st">&quot;Sensitivity (TPR)&quot;</span>)<span class="sc">+</span><span class="fu">geom_abline</span>(<span class="at">intercept =</span> <span class="fl">1.00</span>, <span class="at">size =</span> <span class="fl">0.5</span>, <span class="at">linetype=</span><span class="st">&quot;dotted&quot;</span>, <span class="at">color =</span> <span class="st">&quot;red&quot;</span>)<span class="sc">+</span> <span class="fu">coord_cartesian</span>(<span class="at">xlim=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">0</span>))</span></code></pre></div>
+<p><img src="bookdownproj_files/figure-html/unnamed-chunk-15-1.png" width="672" />
+# Interesting relationship</p>
+<div class="sourceCode" id="cb42"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb42-1"><a href="variable-importance.html#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Add color blind palette</span></span>
+<span id="cb42-2"><a href="variable-importance.html#cb42-2" aria-hidden="true" tabindex="-1"></a>cbPalette <span class="ot">=</span> <span class="fu">c</span>(<span class="st">&quot;#999999&quot;</span>, <span class="st">&quot;#E69F00&quot;</span>, <span class="st">&quot;#56B4E9&quot;</span>, <span class="st">&quot;#009E73&quot;</span>, <span class="st">&quot;#F0E442&quot;</span>, <span class="st">&quot;#D55E00&quot;</span>, <span class="st">&quot;#CC79A7&quot;</span>)</span>
+<span id="cb42-3"><a href="variable-importance.html#cb42-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-4"><a href="variable-importance.html#cb42-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot data</span></span>
+<span id="cb42-5"><a href="variable-importance.html#cb42-5" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> train) <span class="sc">+</span></span>
+<span id="cb42-6"><a href="variable-importance.html#cb42-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>(<span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">x =</span> over_50k, <span class="at">fill =</span> marital_status, <span class="at">color =</span>)) <span class="sc">+</span></span>
+<span id="cb42-7"><a href="variable-importance.html#cb42-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values=</span>cbPalette) <span class="sc">+</span> </span>
+<span id="cb42-8"><a href="variable-importance.html#cb42-8" aria-hidden="true" tabindex="-1"></a>  <span class="co">#scale_fill_discrete(labels = c(&quot;Divorced&quot;, &quot;Married- Armed Forces&quot;, &quot;Married- Civil Spouse&quot;, &quot;Married- Spouse Absent&quot;, &quot;Never Married&quot;, &quot;Separated&quot;, &quot;Widowed&quot;)) +</span></span>
+<span id="cb42-9"><a href="variable-importance.html#cb42-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title=</span><span class="st">&quot;Marital Status over Earning Category&quot;</span>, <span class="at">x =</span><span class="st">&quot;Earning Over 50k (0: No, 1: Yes)&quot;</span>, <span class="at">y =</span> <span class="st">&quot;Frequency&quot;</span>, <span class="at">fill =</span> <span class="st">&quot;Marital Status&quot;</span>) <span class="sc">+</span></span>
+<span id="cb42-10"><a href="variable-importance.html#cb42-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code></pre></div>
+<p><img src="bookdownproj_files/figure-html/unnamed-chunk-16-1.png" width="672" />
+# Get final AUROC on test data</p>
+<div class="sourceCode" id="cb43"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb43-1"><a href="variable-importance.html#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Make predictions on validation set</span></span>
+<span id="cb43-2"><a href="variable-importance.html#cb43-2" aria-hidden="true" tabindex="-1"></a>test<span class="sc">$</span>p_hat <span class="ot">=</span> <span class="fu">predict</span>(logit.model, <span class="at">newdata =</span> test, <span class="at">type =</span> <span class="st">&#39;response&#39;</span>)</span>
+<span id="cb43-3"><a href="variable-importance.html#cb43-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb43-4"><a href="variable-importance.html#cb43-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Confusion Matrix using Youdens cutoff</span></span>
+<span id="cb43-5"><a href="variable-importance.html#cb43-5" aria-hidden="true" tabindex="-1"></a>test<span class="sc">$</span>classification <span class="ot">=</span> <span class="fu">ifelse</span>(test<span class="sc">$</span>p_hat <span class="sc">&gt;=</span> <span class="fl">0.2</span>, <span class="dv">1</span>, <span class="dv">0</span>)</span>
+<span id="cb43-6"><a href="variable-importance.html#cb43-6" aria-hidden="true" tabindex="-1"></a><span class="fu">confusionMatrix</span>(test<span class="sc">$</span>over_50k, <span class="fu">factor</span>(test<span class="sc">$</span>classification))</span></code></pre></div>
+<pre><code>## Confusion Matrix and Statistics
+## 
+##           Reference
+## Prediction    0    1
+##          0 5683 1845
+##          1  273 1968
+##                                           
+##                Accuracy : 0.7832          
+##                  95% CI : (0.7749, 0.7913)
+##     No Information Rate : 0.6097          
+##     P-Value [Acc &gt; NIR] : &lt; 2.2e-16       
+##                                           
+##                   Kappa : 0.508           
+##                                           
+##  Mcnemar&#39;s Test P-Value : &lt; 2.2e-16       
+##                                           
+##             Sensitivity : 0.9542          
+##             Specificity : 0.5161          
+##          Pos Pred Value : 0.7549          
+##          Neg Pred Value : 0.8782          
+##              Prevalence : 0.6097          
+##          Detection Rate : 0.5817          
+##    Detection Prevalence : 0.7706          
+##       Balanced Accuracy : 0.7351          
+##                                           
+##        &#39;Positive&#39; Class : 0               
+## </code></pre>
+<div class="sourceCode" id="cb45"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb45-1"><a href="variable-importance.html#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Evaluate model using AUROC</span></span>
+<span id="cb45-2"><a href="variable-importance.html#cb45-2" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(census<span class="sc">$</span>over_50k)</span></code></pre></div>
+<pre><code>## 
+##     0     1 
+## 37155 11687</code></pre>
+<div class="sourceCode" id="cb47"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb47-1"><a href="variable-importance.html#cb47-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plotROC</span>(test<span class="sc">$</span>over_50k, test<span class="sc">$</span>p_hat) <span class="co"># 0.894 AUROC</span></span></code></pre></div>
+<p><img src="bookdownproj_files/figure-html/unnamed-chunk-17-1.png" width="672" /></p>
+
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="tuning-through-caret.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="conclusion-write-up.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": false,
+"facebook": true,
+"twitter": true,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"whatsapp": false,
+"all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": "https://github.com/lclindegaard/RTI-Census-Analysis/edit/master/02-tears.Rmd",
+"text": "Edit"
+},
+"history": {
+"link": null,
+"text": null
+},
+"view": {
+"link": "https://github.com/lclindegaard/RTI-Census-Analysis/blob/master/02-tears.Rmd",
+"text": null
+},
+"download": null,
+"search": {
+"engine": "fuse",
+"options": null
+},
+"toc": {
+"collapse": "subsection"
+}
+});
+});
+</script>
+
+</body>
+
+</html>

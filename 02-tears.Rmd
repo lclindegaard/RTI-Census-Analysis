@@ -97,7 +97,7 @@ census = census[,c('id', 'over_50k', 'age_bin', 'capital_gain_indicator', 'capit
 
 # Check for Quasi Complete Separation
 
-```{r include=FALSE}
+```{r Quasi Complete Separation, include=FALSE}
 # This loop will print out the column name for any cross table that contains zeros (separation) or < 5 observations
 for (i in 1:13) {
   x = table(census[, i], census$over_50k)
@@ -133,7 +133,7 @@ CrossTable(census$occupation, census$over_50k)
 
 # Split data into training, validation and test
 
-```{r include=FALSE}
+```{r Split data, include=FALSE}
 #Split the data into a 70/20/10 training, validation, and test data split.
 train = census %>% sample_frac(0.7)
 test_validation = anti_join(census, train, by = 'id')
@@ -143,7 +143,7 @@ validation = anti_join(test_validation, test, by = 'id')
 
 # Exploratory Statistics on Training Data
 
-```{r include=FALSE}
+```{r Exploratory, include=FALSE}
 prop.table(table(train$over_50k)) # 24 % over 50k
 
 # Explore odds ratio for binary variables
@@ -167,7 +167,7 @@ chisq.test(table(train$over_50k, train$education_level)) # p-value < 2.2e-16
 
 # Check for issues with multi-collinearity
 
-```{r include=FALSE}
+```{r VIF Check, include=FALSE}
 VIF.model=glm(over_50k~.,data=train[,2:13],family = binomial(link = "logit"))
 VIF.model
 # No VIF over 10
@@ -175,7 +175,7 @@ VIF.model
 
 # Variable Selection
 
-```{r echo=TRUE}
+```{r Variable Selection, echo=TRUE}
 # Stepwise selection to select relevant variables
 full.model <-  glm(over_50k ~ ., data=train[,2:13], family = binomial(link = "logit"))
 empty.model <- glm(over_50k ~ 1, data=train[,2:13], family = binomial(link = "logit"))
@@ -214,7 +214,7 @@ for.model <- step(main.model,
 
 #Create Logistic Regression
 
-```{r echo=TRUE}
+```{r Logistic Regression, echo=TRUE}
 
 # GLM with binomial logit link
 logit.model <- glm(over_50k ~ marital_status + education_level +                 capital_gain_indicator + occupation + hours_week_bin + age_bin +                 capital_loss_indicator + workclass + country_bin + race +     
@@ -227,7 +227,7 @@ summary(logit.model)
 
 # View Coefficient of Discrimination (R2)
 
-```{r echo=TRUE}
+```{r R2, echo=TRUE}
 # Get coefficient of discrimination (R2)
 train$p_hat = predict(logit.model, type = 'response')
 p1 = train$p_hat[train$over_50k == 1]
@@ -253,7 +253,7 @@ ggplot(train, aes(p_hat, fill = over_50k)) +
 
 # Determine optimal cut-off
 
-```{r echo=TRUE}
+```{r Cut Off, echo=TRUE}
 # Iterate through cut-off values to determine optimal cut-off
 train$p_hat <- predict(logit.model, type = "response")
 
@@ -276,7 +276,7 @@ confusionMatrix(train$over_50k, factor(train$classification))
 
 # AUROC
 
-```{r echo=TRUE}
+```{r AUROC, echo=TRUE}
 # Evaluate model using AUROC
 
 train$p_hat <- predict(logit.model, type = "response")
@@ -286,7 +286,7 @@ plotROC(train$over_50k, train$p_hat) # 0.902 AUROC
 
 # Test training cut off on validation
 
-```{r echo=TRUE}
+```{r AUROC Validation, echo=TRUE}
 # Make predictions on validation set
 validation$p_hat = predict(logit.model, newdata = validation, type = 'response')
 
@@ -305,7 +305,7 @@ plotROC(validation$over_50k, validation$p_hat) # 0.899 AUROC
 
 ## Create XGBoost
 
-```{r include=FALSE}
+```{r XGBoost, include=FALSE}
 #XGBoost model here
 # Prepare data for XGBoost function
 train_x <- model.matrix(over_50k ~ ., data = train)[, 3:53]
@@ -315,7 +315,7 @@ train_y <- as.numeric(as.character(train$over_50k))
 
 # Tuning an XGBoost nrounds parameter - 11 was lowest
 
-```{r echo=TRUE}
+```{r Tuning, eval=FALSE, include=FALSE}
 xgbcv <- xgb.cv(data = train_x, label = train_y, subsample = 0.5, nrounds = 100, nfold = 10)
 eval <- xgbcv$evaluation_log
 
@@ -325,7 +325,7 @@ eval %>%
 
 # Tuning through caret
 
-```{r eval=FALSE, include=FALSE}
+```{r Tuning long code, eval=FALSE, include=FALSE}
 tune_grid <- expand.grid(
   nrounds = 11,
   eta = c(0.8, 0.85, 0.9, 0.95),
@@ -347,7 +347,7 @@ eta = .9 and subsample = .25, max tree depth = 10
 
 # Variable importance
 
-```{r echo=TRUE}
+```{r Create XGBoost and Var Imp, echo=TRUE}
 
 xgb <- xgboost(data = train_x, label = train_y, subsample = .25, nrounds = 11, eta = 0.9, max_depth = 10)
 
@@ -356,8 +356,9 @@ xgb.importance(feature_names = colnames(train_x), model = xgb)
 xgb.ggplot.importance(xgb.importance(feature_names = colnames(train_x), model = xgb))
 ```
 
-### ROC Curve and AUC
-```{r echo=TRUE}
+# ROC Curve and AUC
+
+```{r AUROC XGBoost, echo=TRUE}
 # get predictions
 # Prepare data for predict function
 validation_x <- model.matrix(over_50k ~ ., data = validation)[, 3:53]
@@ -373,9 +374,10 @@ ggroc(rocobj, colour = 'steelblue', size = 2) +
   ggtitle(paste0('XGBoost Model ROC Curve ', '(AUC = ', round(rocobj$auc, 4), ')')) +
   theme_minimal()+ labs(x="1-Specificity (FPR)",y="Sensitivity (TPR)")+geom_abline(intercept = 1.00, size = 0.5, linetype="dotted", color = "red")+ coord_cartesian(xlim=c(1,0))
 ```
+
 # Interesting relationship
 
-```{r echo=TRUE}
+```{r Marital Chart, echo=TRUE}
 # Add color blind palette
 cbPalette = c("#999999", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#D55E00", "#CC79A7")
 
@@ -387,9 +389,10 @@ ggplot(data = train) +
   labs(title="Marital Status over Earning Category", x ="Earning Over 50k (0: No, 1: Yes)", y = "Frequency", fill = "Marital Status") +
   theme_minimal()
 ```
+
 # Get final AUROC on test data
 
-```{r echo=TRUE}
+```{r FINAL AUROC, echo=TRUE}
 # Make predictions on validation set
 test$p_hat = predict(logit.model, newdata = test, type = 'response')
 
