@@ -24,7 +24,7 @@
 <meta name="author" content="Louise Lindegaard" />
 
 
-<meta name="date" content="2022-02-06" />
+<meta name="date" content="2022-02-07" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -189,7 +189,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div id="header">
 <h1 class="title">RTI Take Home Assignment</h1>
 <p class="author"><em>Louise Lindegaard</em></p>
-<p class="date"><em>2022-02-06</em></p>
+<p class="date"><em>2022-02-07</em></p>
 </div>
 <div id="sql-data-consolidation" class="section level1" number="1">
 <h1><span class="header-section-number">Chapter 1</span> SQL Data Consolidation</h1>
@@ -197,6 +197,19 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>– The select statement contains 2 data cleaning steps:
 1. Remove redundant columns
 2. Rename variables to logical names</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb1-1"><a href="index.html#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">-- The select statement contains 2 data cleaning steps: 1. Remove redundant columns 2. Rename variables to logical names</span></span>
+<span id="cb1-2"><a href="index.html#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> r.<span class="kw">id</span> <span class="kw">as</span> <span class="kw">id</span>, over_50k, age, education_num, capital_gain, capital_loss, hours_week, workclass_id, w.name <span class="kw">as</span> workclass, education_level_id, e.name <span class="kw">as</span> education_level, marital_status_id, m.name <span class="kw">as</span> marital_status, occupation_id, o.name <span class="kw">as</span> occupation, relationship_id, rel.name <span class="kw">as</span> relationship, race_id, races.name <span class="kw">as</span> race, sex_id, s.name <span class="kw">as</span> sex, country_id, c.name <span class="kw">as</span> country</span>
+<span id="cb1-3"><a href="index.html#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> records <span class="kw">as</span> r</span>
+<span id="cb1-4"><a href="index.html#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co">-- The left join includes all observations from the records table</span></span>
+<span id="cb1-5"><a href="index.html#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="kw">LEFT</span> <span class="kw">JOIN</span> countries <span class="kw">as</span> c <span class="kw">ON</span> r.country_id <span class="op">=</span> c.<span class="kw">id</span></span>
+<span id="cb1-6"><a href="index.html#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="kw">LEFT</span> <span class="kw">JOIN</span> education_levels <span class="kw">as</span> e <span class="kw">ON</span> r.education_level_id <span class="op">=</span> e.<span class="kw">id</span></span>
+<span id="cb1-7"><a href="index.html#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="kw">LEFT</span> <span class="kw">JOIN</span> marital_statuses <span class="kw">as</span> m <span class="kw">ON</span> r.marital_status_id <span class="op">=</span> m.<span class="kw">id</span></span>
+<span id="cb1-8"><a href="index.html#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="kw">LEFT</span> <span class="kw">JOIN</span> occupations <span class="kw">as</span> o <span class="kw">ON</span> r.occupation_id <span class="op">=</span> o.<span class="kw">id</span></span>
+<span id="cb1-9"><a href="index.html#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="kw">LEFT</span> <span class="kw">JOIN</span> races <span class="kw">ON</span> r.race_id <span class="op">=</span> races.<span class="kw">id</span></span>
+<span id="cb1-10"><a href="index.html#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="kw">LEFT</span> <span class="kw">JOIN</span> relationships <span class="kw">as</span> rel <span class="kw">ON</span> r.relationship_id <span class="op">=</span> rel.<span class="kw">id</span></span>
+<span id="cb1-11"><a href="index.html#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="kw">LEFT</span> <span class="kw">JOIN</span> sexes <span class="kw">as</span> s <span class="kw">ON</span> r.sex_id <span class="op">=</span> s.<span class="kw">id</span></span>
+<span id="cb1-12"><a href="index.html#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="kw">LEFT</span> <span class="kw">JOIN</span> workclasses <span class="kw">as</span> w <span class="kw">ON</span> r.workclass_id <span class="op">=</span> w.<span class="kw">id</span>;</span>
+<span id="cb1-13"><a href="index.html#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="co">-- Per instruction, the above statement was exported to CSV</span></span></code></pre></div>
 
 </div>
             </section>

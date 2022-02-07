@@ -24,7 +24,7 @@
 <meta name="author" content="Louise Lindegaard" />
 
 
-<meta name="date" content="2022-02-06" />
+<meta name="date" content="2022-02-07" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -197,93 +197,93 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </div>
 <div id="variable-importance" class="section level2" number="4.3">
 <h2><span class="header-section-number">4.3</span> Variable importance</h2>
-<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="create-xgboost.html#cb27-1" aria-hidden="true" tabindex="-1"></a>xgb <span class="ot">&lt;-</span> <span class="fu">xgboost</span>(<span class="at">data =</span> train_x, <span class="at">label =</span> train_y, <span class="at">subsample =</span> .<span class="dv">25</span>, <span class="at">nrounds =</span> <span class="dv">11</span>, <span class="at">eta =</span> <span class="fl">0.9</span>, <span class="at">max_depth =</span> <span class="dv">10</span>)</span></code></pre></div>
-<pre><code>## [1]  train-rmse:0.340135 
-## [2]  train-rmse:0.336631 
-## [3]  train-rmse:0.333233 
-## [4]  train-rmse:0.333880 
-## [5]  train-rmse:0.336040 
-## [6]  train-rmse:0.337866 
-## [7]  train-rmse:0.339267 
-## [8]  train-rmse:0.339087 
-## [9]  train-rmse:0.339663 
-## [10] train-rmse:0.341031 
-## [11] train-rmse:0.340575</code></pre>
-<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb29-1"><a href="create-xgboost.html#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="fu">xgb.importance</span>(<span class="at">feature_names =</span> <span class="fu">colnames</span>(train_x), <span class="at">model =</span> xgb)</span></code></pre></div>
-<pre><code>##                                 Feature         Gain        Cover   Frequency
-##  1:    marital_statusMarried-civ-spouse 0.2273600229 0.0527439508 0.051390356
-##  2:              capital_gain_indicator 0.0618545038 0.0394778043 0.055614220
-##  3:            occupationProf-specialty 0.0517327803 0.0403882367 0.022175290
-##  4:           occupationExec-managerial 0.0512482996 0.0218074816 0.018303414
-##  5:            education_levelBachelors 0.0429543688 0.0163416706 0.030271031
-##  6:                     hours_week_bin2 0.0362576470 0.0340945649 0.048926434
-##  7:                            age_bin2 0.0299032012 0.0478357662 0.051742344
-##  8:              capital_loss_indicator 0.0298984616 0.0275102839 0.033438930
-##  9:                     hours_week_bin1 0.0291770053 0.0246567381 0.052446322
-## 10:                            age_bin1 0.0259130395 0.0218868362 0.062653995
-## 11:                             sexMale 0.0256835788 0.0163491771 0.048574446
-## 12:           workclassSelf-emp-not-inc 0.0211352929 0.0268625794 0.020415347
-## 13:                            age_bin3 0.0208044869 0.0220037232 0.034142907
-## 14:                         country_bin 0.0194847678 0.0111836264 0.029215065
-## 15:              education_levelHS-grad 0.0176945331 0.0163588283 0.023231257
-## 16:         marital_statusNever-married 0.0165244621 0.0109123197 0.027455121
-## 17:                  workclassLocal-gov 0.0162854398 0.0306522942 0.024287223
-## 18:         education_levelSome-college 0.0162270007 0.0139127787 0.022879268
-## 19:                    workclassPrivate 0.0157738781 0.0122988792 0.032030975
-## 20:              education_levelMasters 0.0152197343 0.0338028834 0.020415347
-## 21:               workclassSelf-emp-inc 0.0150251453 0.0466561719 0.017951426
-## 22:                  workclassState-gov 0.0140412321 0.0152167665 0.019711369
-## 23:            education_levelDoctorate 0.0132824861 0.0417415530 0.011263640
-## 24:                     occupationSales 0.0127450992 0.0271499715 0.014431538
-## 25:                           raceBlack 0.0118962703 0.0120275725 0.018655403
-## 26:              occupationTech-support 0.0116405943 0.0176499479 0.009855685
-## 27:              raceAsian-Pac-Islander 0.0109917840 0.0292689518 0.015135516
-## 28:           education_levelAssoc-acdm 0.0109646437 0.0056985129 0.016895459
-## 29:           occupationProtective-serv 0.0106562593 0.0461242821 0.009855685
-## 30:                           raceWhite 0.0101277694 0.0084920066 0.012319606
-## 31:              occupationCraft-repair 0.0098904895 0.0180960490 0.012671595
-## 32:            education_levelAssoc-voc 0.0091385794 0.0299638401 0.015135516
-## 33:          education_levelProf-school 0.0090272681 0.0240519279 0.009151707
-## 34:           occupationFarming-fishing 0.0071400388 0.0167695416 0.007039775
-## 35:              education_level7th-8th 0.0070718397 0.0048910269 0.005631820
-## 36:              occupationAdm-clerical 0.0066976601 0.0144318001 0.013023583
-## 37:             occupationOther-service 0.0062356669 0.0114002428 0.009503696
-## 38:          occupationTransport-moving 0.0062105558 0.0135224402 0.007743752
-## 39:                  education_level9th 0.0053061415 0.0122913727 0.005279831
-## 40:         occupationMachine-op-inspct 0.0052943682 0.0139181404 0.007391763
-## 41: marital_statusMarried-spouse-absent 0.0051963107 0.0033564820 0.007391763
-## 42:             marital_statusSeparated 0.0048160845 0.0024728586 0.008095741
-## 43:               marital_statusWidowed 0.0043967105 0.0031784705 0.006687786
-## 44:                 education_level11th 0.0038172565 0.0078507363 0.006687786
-## 45:     marital_statusMarried-AF-spouse 0.0038155091 0.0305868803 0.003871876
-## 46:         occupationHandlers-cleaners 0.0033002506 0.0094732146 0.004927842
-## 47:                    workclassUnknown 0.0030600390 0.0027323694 0.004575854
-## 48:              education_level5th-6th 0.0024772236 0.0031387932 0.003519887
-## 49:                 education_level12th 0.0023901030 0.0019731396 0.002463921
-## 50:                           raceOther 0.0019639058 0.0043344729 0.002463921
-## 51:             education_levelEarly-Ed 0.0002502108 0.0004600418 0.001055966
-##                                 Feature         Gain        Cover   Frequency</code></pre>
-<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb31-1"><a href="create-xgboost.html#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="fu">xgb.ggplot.importance</span>(<span class="fu">xgb.importance</span>(<span class="at">feature_names =</span> <span class="fu">colnames</span>(train_x), <span class="at">model =</span> xgb))</span></code></pre></div>
+<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb28-1"><a href="create-xgboost.html#cb28-1" aria-hidden="true" tabindex="-1"></a>xgb <span class="ot">&lt;-</span> <span class="fu">xgboost</span>(<span class="at">data =</span> train_x, <span class="at">label =</span> train_y, <span class="at">subsample =</span> .<span class="dv">25</span>, <span class="at">nrounds =</span> <span class="dv">11</span>, <span class="at">eta =</span> <span class="fl">0.9</span>, <span class="at">max_depth =</span> <span class="dv">10</span>)</span></code></pre></div>
+<pre><code>## [1]  train-rmse:0.340196 
+## [2]  train-rmse:0.335860 
+## [3]  train-rmse:0.336339 
+## [4]  train-rmse:0.337874 
+## [5]  train-rmse:0.339194 
+## [6]  train-rmse:0.338953 
+## [7]  train-rmse:0.340051 
+## [8]  train-rmse:0.339826 
+## [9]  train-rmse:0.340647 
+## [10] train-rmse:0.341934 
+## [11] train-rmse:0.342539</code></pre>
+<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb30-1"><a href="create-xgboost.html#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="fu">xgb.importance</span>(<span class="at">feature_names =</span> <span class="fu">colnames</span>(train_x), <span class="at">model =</span> xgb)</span></code></pre></div>
+<pre><code>##                                 Feature        Gain        Cover   Frequency
+##  1:    marital_statusMarried-civ-spouse 0.210253784 0.0562343621 0.047082228
+##  2:              capital_gain_indicator 0.063878144 0.0409333845 0.052718833
+##  3:            education_levelBachelors 0.054371522 0.0433295325 0.030835544
+##  4:            occupationProf-specialty 0.043213945 0.0447810556 0.021551724
+##  5:           occupationExec-managerial 0.041014177 0.0326252249 0.023541114
+##  6:                     hours_week_bin2 0.034572953 0.0278902117 0.041445623
+##  7:                            age_bin2 0.034069255 0.0335503953 0.051392573
+##  8:              capital_loss_indicator 0.031711947 0.0374142785 0.039124668
+##  9:              education_levelMasters 0.029735995 0.0484730906 0.025198939
+## 10:                            age_bin1 0.024941425 0.0435856836 0.052718833
+## 11:                             sexMale 0.022629657 0.0100796014 0.037798408
+## 12:                     hours_week_bin1 0.022520770 0.0229044513 0.058023873
+## 13:                    workclassPrivate 0.021677904 0.0193821029 0.042440318
+## 14:              education_levelHS-grad 0.021303070 0.0082519576 0.026525199
+## 15:           workclassSelf-emp-not-inc 0.020814088 0.0101422882 0.020225464
+## 16:                            age_bin3 0.018453215 0.0343804547 0.031498674
+## 17:                         country_bin 0.017937683 0.0209276562 0.025530504
+## 18:         marital_statusNever-married 0.016527463 0.0149702508 0.029177719
+## 19:            education_levelDoctorate 0.016246897 0.0407939605 0.013594164
+## 20:              occupationCraft-repair 0.015893951 0.0277486260 0.018567639
+## 21:         education_levelSome-college 0.015794056 0.0096407940 0.022214854
+## 22:            education_levelAssoc-voc 0.012792826 0.0120607197 0.019562334
+## 23:                  workclassLocal-gov 0.012671833 0.0306624803 0.021551724
+## 24:              raceAsian-Pac-Islander 0.012659613 0.0298842997 0.017904509
+## 25:                  workclassState-gov 0.012447971 0.0189162753 0.019893899
+## 26:               workclassSelf-emp-inc 0.012328598 0.0252714175 0.017904509
+## 27:          education_levelProf-school 0.011200841 0.0358449475 0.009283820
+## 28:                     occupationSales 0.010900126 0.0155776641 0.013262599
+## 29:              occupationAdm-clerical 0.010771598 0.0080714629 0.013925729
+## 30:                           raceBlack 0.010723369 0.0045545186 0.016578249
+## 31:           education_levelAssoc-acdm 0.010287803 0.0037709339 0.010941645
+## 32:             occupationOther-service 0.008729316 0.0050797905 0.007294430
+## 33:                           raceWhite 0.008616448 0.0048722757 0.012267905
+## 34:             marital_statusSeparated 0.008579805 0.0044669733 0.010278515
+## 35:           occupationProtective-serv 0.008496345 0.0250131048 0.007957560
+## 36:              occupationTech-support 0.008351747 0.0202834955 0.008952255
+## 37:          occupationTransport-moving 0.008059925 0.0376682681 0.006962865
+## 38:           occupationFarming-fishing 0.006672579 0.0069322929 0.004973475
+## 39:         occupationHandlers-cleaners 0.006505596 0.0151507455 0.006631300
+## 40:               marital_statusWidowed 0.005578882 0.0022869865 0.009615385
+## 41:                 education_level12th 0.005126731 0.0089966333 0.005968170
+## 42:                    workclassUnknown 0.004779542 0.0040940950 0.005636605
+## 43:         occupationMachine-op-inspct 0.004500412 0.0042302766 0.003315650
+## 44:              education_level7th-8th 0.004060411 0.0064362027 0.006631300
+## 45:                           raceOther 0.003660906 0.0019357244 0.004310345
+## 46:                  education_level9th 0.003416557 0.0063864856 0.007294430
+## 47:     marital_statusMarried-AF-spouse 0.002992914 0.0279993731 0.003978780
+## 48:                 education_level11th 0.002728660 0.0022167341 0.005636605
+## 49: marital_statusMarried-spouse-absent 0.002582004 0.0023604814 0.005305040
+## 50:             education_levelEarly-Ed 0.001116936 0.0004323226 0.002320955
+## 51:              education_level5th-6th 0.001097802 0.0005036558 0.002652520
+##                                 Feature        Gain        Cover   Frequency</code></pre>
+<div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb32-1"><a href="create-xgboost.html#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="fu">xgb.ggplot.importance</span>(<span class="fu">xgb.importance</span>(<span class="at">feature_names =</span> <span class="fu">colnames</span>(train_x), <span class="at">model =</span> xgb))</span></code></pre></div>
 <p><img src="bookdownproj_files/figure-html/Create%20XGBoost%20and%20Var%20Imp-1.png" width="672" /></p>
 </div>
 <div id="roc-curve-and-auc" class="section level2" number="4.4">
 <h2><span class="header-section-number">4.4</span> ROC Curve and AUC</h2>
-<div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb32-1"><a href="create-xgboost.html#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="co"># get predictions</span></span>
-<span id="cb32-2"><a href="create-xgboost.html#cb32-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Prepare data for predict function</span></span>
-<span id="cb32-3"><a href="create-xgboost.html#cb32-3" aria-hidden="true" tabindex="-1"></a>validation_x <span class="ot">&lt;-</span> <span class="fu">model.matrix</span>(over_50k <span class="sc">~</span> ., <span class="at">data =</span> validation)[, <span class="dv">3</span><span class="sc">:</span><span class="dv">53</span>]</span>
-<span id="cb32-4"><a href="create-xgboost.html#cb32-4" aria-hidden="true" tabindex="-1"></a>validation_y <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(<span class="fu">as.character</span>(validation<span class="sc">$</span>over_50k))</span>
-<span id="cb32-5"><a href="create-xgboost.html#cb32-5" aria-hidden="true" tabindex="-1"></a>p_hat_xgb <span class="ot">&lt;-</span> <span class="fu">predict</span>(xgb, <span class="at">newdata =</span> validation_x, <span class="at">type =</span> <span class="st">&quot;response&quot;</span>)</span>
-<span id="cb32-6"><a href="create-xgboost.html#cb32-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb32-7"><a href="create-xgboost.html#cb32-7" aria-hidden="true" tabindex="-1"></a><span class="co"># create ROC object</span></span>
-<span id="cb32-8"><a href="create-xgboost.html#cb32-8" aria-hidden="true" tabindex="-1"></a>rocobj <span class="ot">&lt;-</span> <span class="fu">roc</span>(validation<span class="sc">$</span>over_50k, p_hat_xgb)</span></code></pre></div>
+<div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb33-1"><a href="create-xgboost.html#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="co"># get predictions</span></span>
+<span id="cb33-2"><a href="create-xgboost.html#cb33-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Prepare data for predict function</span></span>
+<span id="cb33-3"><a href="create-xgboost.html#cb33-3" aria-hidden="true" tabindex="-1"></a>validation_x <span class="ot">&lt;-</span> <span class="fu">model.matrix</span>(over_50k <span class="sc">~</span> ., <span class="at">data =</span> validation)[, <span class="dv">3</span><span class="sc">:</span><span class="dv">53</span>]</span>
+<span id="cb33-4"><a href="create-xgboost.html#cb33-4" aria-hidden="true" tabindex="-1"></a>validation_y <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(<span class="fu">as.character</span>(validation<span class="sc">$</span>over_50k))</span>
+<span id="cb33-5"><a href="create-xgboost.html#cb33-5" aria-hidden="true" tabindex="-1"></a>p_hat_xgb <span class="ot">&lt;-</span> <span class="fu">predict</span>(xgb, <span class="at">newdata =</span> validation_x, <span class="at">type =</span> <span class="st">&quot;response&quot;</span>)</span>
+<span id="cb33-6"><a href="create-xgboost.html#cb33-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-7"><a href="create-xgboost.html#cb33-7" aria-hidden="true" tabindex="-1"></a><span class="co"># create ROC object</span></span>
+<span id="cb33-8"><a href="create-xgboost.html#cb33-8" aria-hidden="true" tabindex="-1"></a>rocobj <span class="ot">&lt;-</span> <span class="fu">roc</span>(validation<span class="sc">$</span>over_50k, p_hat_xgb)</span></code></pre></div>
 <pre><code>## Setting levels: control = 0, case = 1</code></pre>
 <pre><code>## Setting direction: controls &lt; cases</code></pre>
-<div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb35-1"><a href="create-xgboost.html#cb35-1" aria-hidden="true" tabindex="-1"></a>rocobj<span class="sc">$</span>auc <span class="co"># to get AUC - 0.816</span></span></code></pre></div>
-<pre><code>## Area under the curve: 0.8379</code></pre>
-<div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb37-1"><a href="create-xgboost.html#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="co"># create ROC plot with minimal theme</span></span>
-<span id="cb37-2"><a href="create-xgboost.html#cb37-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggroc</span>(rocobj, <span class="at">colour =</span> <span class="st">&#39;steelblue&#39;</span>, <span class="at">size =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
-<span id="cb37-3"><a href="create-xgboost.html#cb37-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="fu">paste0</span>(<span class="st">&#39;XGBoost Model ROC Curve &#39;</span>, <span class="st">&#39;(AUC = &#39;</span>, <span class="fu">round</span>(rocobj<span class="sc">$</span>auc, <span class="dv">4</span>), <span class="st">&#39;)&#39;</span>)) <span class="sc">+</span></span>
-<span id="cb37-4"><a href="create-xgboost.html#cb37-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()<span class="sc">+</span> <span class="fu">labs</span>(<span class="at">x=</span><span class="st">&quot;1-Specificity (FPR)&quot;</span>,<span class="at">y=</span><span class="st">&quot;Sensitivity (TPR)&quot;</span>)<span class="sc">+</span><span class="fu">geom_abline</span>(<span class="at">intercept =</span> <span class="fl">1.00</span>, <span class="at">size =</span> <span class="fl">0.5</span>, <span class="at">linetype=</span><span class="st">&quot;dotted&quot;</span>, <span class="at">color =</span> <span class="st">&quot;red&quot;</span>)<span class="sc">+</span> <span class="fu">coord_cartesian</span>(<span class="at">xlim=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">0</span>))</span></code></pre></div>
+<div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb36-1"><a href="create-xgboost.html#cb36-1" aria-hidden="true" tabindex="-1"></a>rocobj<span class="sc">$</span>auc <span class="co"># to get AUC - 0.816</span></span></code></pre></div>
+<pre><code>## Area under the curve: 0.8242</code></pre>
+<div class="sourceCode" id="cb38"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb38-1"><a href="create-xgboost.html#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="co"># create ROC plot with minimal theme</span></span>
+<span id="cb38-2"><a href="create-xgboost.html#cb38-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggroc</span>(rocobj, <span class="at">colour =</span> <span class="st">&#39;steelblue&#39;</span>, <span class="at">size =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb38-3"><a href="create-xgboost.html#cb38-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="fu">paste0</span>(<span class="st">&#39;XGBoost Model ROC Curve &#39;</span>, <span class="st">&#39;(AUC = &#39;</span>, <span class="fu">round</span>(rocobj<span class="sc">$</span>auc, <span class="dv">4</span>), <span class="st">&#39;)&#39;</span>)) <span class="sc">+</span></span>
+<span id="cb38-4"><a href="create-xgboost.html#cb38-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()<span class="sc">+</span> <span class="fu">labs</span>(<span class="at">x=</span><span class="st">&quot;1-Specificity (FPR)&quot;</span>,<span class="at">y=</span><span class="st">&quot;Sensitivity (TPR)&quot;</span>)<span class="sc">+</span><span class="fu">geom_abline</span>(<span class="at">intercept =</span> <span class="fl">1.00</span>, <span class="at">size =</span> <span class="fl">0.5</span>, <span class="at">linetype=</span><span class="st">&quot;dotted&quot;</span>, <span class="at">color =</span> <span class="st">&quot;red&quot;</span>)<span class="sc">+</span> <span class="fu">coord_cartesian</span>(<span class="at">xlim=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">0</span>))</span></code></pre></div>
 <p><img src="bookdownproj_files/figure-html/AUROC%20XGBoost-1.png" width="672" /></p>
 
 </div>

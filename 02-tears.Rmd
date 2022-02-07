@@ -2,7 +2,7 @@
 
 ## Import data and libraries into R
 
-```{r Import data and Libraries, include=FALSE}
+```{r Import data and Libraries, results = 'hide'}
 census = read.csv('exercise01_consolidated.csv')
 library(ggplot2)
 library(InformationValue)
@@ -25,7 +25,7 @@ library(pROC)
 
 ## Data Cleaning
 
-```{r Data Cleaning, include=FALSE}
+```{r Data Cleaning, results = 'hide'}
 #Exploring data types
 for (x in 1:23) {
   print(colnames(census[x]))
@@ -45,7 +45,7 @@ sapply(census, function(x) any(x == "?")) # NA values are only in categorical va
 
 ## Variable binning
 
-```{r Exploratory Analysis, include=FALSE}
+```{r Exploratory Analysis, results = 'hide'}
 
 ## Visualize data and explore each variable
 
@@ -97,7 +97,7 @@ census = census[,c('id', 'over_50k', 'age_bin', 'capital_gain_indicator', 'capit
 
 ## Check for Quasi Complete Separation
 
-```{r Quasi Complete Separation, include=FALSE}
+```{r Quasi Complete Separation, results = 'hide'}
 # This loop will print out the column name for any cross table that contains zeros (separation) or < 5 observations
 for (i in 1:13) {
   x = table(census[, i], census$over_50k)
