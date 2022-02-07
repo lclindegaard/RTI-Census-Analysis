@@ -1,7 +1,17 @@
 # Conclusion / Write Up
 
-1. Describe your methodology and results in 500 words or less.
-    - Include the chart generated as of your write-up. Explain how the chart informs your analysis.
-    - You'll not be punished for going over 500 words, but it is a rough guideline of the length we expect.
-2. Include a chart that you feel conveys one important relationship in the data.
+Overview
+The goal of this project is to develop a model that predicts whether individuals, based on census variables, make over \$50,000/year. I compared the predictive power of a logistic regression to an XGBoost model using the area under the ROC curve (AUROC). This statistic calculates each models ability to distinguish between people who make above \$50,000/year from those who do not. The logistic regression model resulted in the higher AUROC, and was able to better predict who is likely to make above $50,000/year from census data. The final AUROC on the test data was 0.894.
 
+Methodology
+The first two steps were exploring each variable individually and binning continuous variables into categories. Each variable was then tested for quasi-complete separation. This is a problem when a subgroup of the predictor variable perfectly predicts the target variable outcome. Each subgroup with less than 5 observations was collapsed into a new, larger group. The data was split into a 70/20/10 training/validation/test split and each variable was tested for multi-collinearity to ensure no two variables are providing the same information in the model. Stepwise selection was used to identify which variables were important in predicting the target. The 13 important variables were then used in a forward selection process to identify any predictive interactions. For example, the selection process identified changes in the target variables relationship with hours worked each week when looking at different occupations. A logistic regression was built using these variables. The XGBoost was tuned and built using all census variables, and the most important variables were calculated using a gain statistic. 
+
+Results
+A simple relationship between marital status and people who make over 50k can be pictured in Figure 1. This figure shows the large majority of people who make over 50k are married to civil spouses. In our census data, 85% of people who make over 50k are married to a civil spouse compared to only 33% of those who do not make over 50k. Furthermore, the XGBoost model found marital status to be the most important variable in predicting the target.
+
+The logistic regression was able to better predict people who make over $50,000/year using census variables. I recommend using a logistic regression moving forward to best predict the individuals that make over 50K using census data. Given more time for tuning, you might be able to challenge the predictive power using a future XGBoost model.
+
+
+
+
+*This repo was initially generated from a bookdown template available here: https://github.com/jtr13/bookdown-template.*

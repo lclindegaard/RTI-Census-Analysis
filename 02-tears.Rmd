@@ -1,74 +1,405 @@
 # Model Building
 
-Import data and libraries into R
+# Import data and libraries into R
 
-```{r}
-census = read.csv('/Users/lindegaard/Documents/GitHub Repo/exercise01_consolidated.csv')
+```{r Import data and Libraries, include=FALSE}
+census = read.csv('exercise01_consolidated.csv')
 library(ggplot2)
-library(dplyr)
 library(InformationValue)
-
+library(gmodels)
+library(DescTools)
+library(vcd)
+library(vcdExtra)
+library(stats)
+library(mgcv)
+library(car)
+library(dplyr)
+library(ROCR)
+library(caret)
+library(mgcv)
+library(xgboost)
+library(optbin)
+library(pROC)
 
 ```
 
-Clean data and exploratory analysis
+# Data Cleaning
 
-
-
-```{r}
-#Perform a simple exploratory analysis and generate summary statistics to get a sense of what is in the data.
-
-#Exploring the types of data
+```{r Data Cleaning, include=FALSE}
+#Exploring data types
 for (x in 1:23) {
   print(colnames(census[x]))
   print(class(census[,x]))
 }
-# Explore values in larger categorical variables
-table(census$education_level)
-# If there are less than 20 levels, factorize the variable
-for (x in 1:23) {
-  if (length(table(census[,x])) < 20)
-  census[,x] = as.factor(census[,x])
-}
 
-# Country is currently not a factor - manually factorize
-census$country = as.factor(census$country)
-census$country_id = as.factor(census$country_id)
+# Set ordinal/ nominal variables as a factor (less than 20 levels)
+col_names <- sapply(census, function(col) length(unique(col)) < 20)
+census[ , col_names] <- lapply(census[ , col_names] , factor)
 
-# Check the variables that are not treated as factors
-for (x in 1:23) {
-  if (class(census[,x]) != "factor") {
-    print(colnames(census[x]))
-    print(class(census[,x]))
+## Check for NA Values (represented with "?") in each variable
+sapply(census, function(x) any(x == "?")) # NA values are only in categorical variables - will explore binning options below
+
+## Data looks very clean, ready to start exploring
+
+```
+
+# Variable binning
+
+```{r Exploratory Analysis, include=FALSE}
+
+## Visualize data and explore each variable
+
+hist(census$age) # mostly normal with slight skew
+hist(census$capital_gain) # Zero Inflated
+hist(census$capital_loss) # Zero Inflated
+hist(census$hours_week) # Heavily inflated at 40 hours
+table(census$education_level) # Lots of categories, check for quasi-complete separation later
+
+## Explore zero inflated variables
+
+colSums(census==0)/nrow(census)*100
+
+# 91.7 % Capital Gain = 0 and 95.3 % capital loss = 0
+# Bin to binary variable:
+
+census$capital_gain_indicator = ifelse(census$capital_gain == 0, 0, 1)
+census$capital_loss_indicator = ifelse(census$capital_loss == 0, 0, 1)
+
+# Bin the working hours variable based on inflation at 40 hours
+census$hours_week_bin[census$hours_week < 40] = 0 
+census$hours_week_bin[census$hours_week > 40] = 2
+census$hours_week_bin[census$hours_week == 40] = 1
+# Factorize
+census$hours_week_bin = factor(census$hours_week_bin)
+
+## Explore country variable
+table(census$country) # 90% in US, will create binary variable instead for simplicity
+census$country_bin = ifelse(census$country == "United-States", 1, 0)
+
+# Explore only normal continuous variable for linear relationship
+gam.age <- gam(over_50k ~ s(age), data = census, family = binomial(link = 'logit'), method = 'REML')
+summary(gam.age)
+plot(gam.age) # age has non-linear relationship with logit- bin this variable using optbin
+
+optbin(census$age, numbin = 4) # Upper inclusive limits of ideal splits is 29, 41, 55, 90
+
+census$age_bin[census$age <= 29] = 0 
+census$age_bin[census$age > 29 & census$age <= 41] = 1
+census$age_bin[census$age > 41 & census$age <= 55] = 2
+census$age_bin[census$age > 55] = 3
+census$age_bin = factor(census$age_bin)
+
+# Remove redundant variables (including education number and relationship to householder)
+
+census = census[,c('id', 'over_50k', 'age_bin', 'capital_gain_indicator', 'capital_loss_indicator', 'hours_week_bin', 'workclass', 'education_level', 'marital_status', 'occupation', 'race', 'sex', 'country_bin' )]
+
+```
+
+# Check for Quasi Complete Separation
+
+```{r}
+# This loop will print out the column name for any cross table that contains zeros (separation) or < 5 observations
+for (i in 1:13) {
+  x = table(census[, i], census$over_50k)
+  for (k in 1:length(x)) {
+    if (x[k] <= 5) {
+      print(c(names(census)[i], names(census$over_50k)))
+      break
+    }
   }
 }
 
+# Workclass contains quasi complete separation
+CrossTable(census$workclass, census$over_50k)
+# Collapse the never worked and without pay categories with missing as this is the most similar split
+census = census %>%
+  mutate(workclass = as.character(workclass),
+  workclass = if_else(workclass == 'Never-worked' | workclass == 'Without-pay' | workclass == '?',   
+  'Unknown', workclass), workclass = factor(workclass))
 
-## Check for NA Values (represented with "?") in each variable
-sapply(census, function(x) any(x == "?"))
-# NA Values in workclass, occupation and country, but they will be treated as an individual category in each of these factor variables
+# Collapse education levels containing <5 observations: pre-school and 1-4th grade
+census = census %>%
+  mutate(education_level = as.character(education_level),
+  education_level = if_else(education_level == 'Preschool' | education_level == '1st-4th', 'Early-Ed',
+  education_level), education_level = factor(education_level))
+CrossTable(census$occupation, census$over_50k)
 
-
-
+# Collapse armed-forces with Protective-serv, and Priv-house-serv with Handlers-cleaners
+census = census %>%
+  mutate(occupation = as.character(occupation),
+  occupation = if_else(occupation == 'Armed-Forces', 'Protective-serv', occupation), occupation = if_else(occupation == 'Priv-house-serv', 'Handlers-cleaners', occupation), occupation = factor(occupation))
+CrossTable(census$occupation, census$over_50k)
 ```
 
-
-Split data into training, validation and test
+# Split data into training, validation and test
 
 ```{r}
 #Split the data into a 70/20/10 training, validation, and test data split.
+train = census %>% sample_frac(0.7)
+test_validation = anti_join(census, train, by = 'id')
+test = test_validation %>% sample_frac(2/3)
+validation = anti_join(test_validation, test, by = 'id')
 ```
 
-Clean data and Develop Model
+# Exploratory Statistics on Training Data
 
 ```{r}
-#Develop a model that predicts whether individuals, based on the census variables provided, make over $50,000/year. Use over_50k as the target variable.
-#Commit enough code to reproduce your full model selection process, including your final model and all models developed along the way.
+prop.table(table(train$over_50k)) # 24 % over 50k
+
+# Explore odds ratio for binary variables
+OddsRatio(table(train$over_50k, train$capital_gain_indicator)) #Those with non-zero capital gains are 6.31 times as likely to make over 50k than those without
+OddsRatio(table(train$over_50k, train$capital_loss_indicator)) #'*Those with non-zero capital losses are 3.36 times as likely to make over 50k than those without*
+OddsRatio(table(train$over_50k, train$country_bin)) #Those in the US are 1.35 times as likely to make above 50k compared to those out of the US
+OddsRatio(table(train$over_50k, train$sex)) #Men are 3.52 times as likely to make above 50k compared to women
+OddsRatio(table(train$capital_gain_indicator, train$sex)) #'*Men are 1.72 times as likely to have non-zero capital gains than women*
+
+#Test association for nominal variables using Chi-square test
+chisq.test(table(train$over_50k, train$workclass)) # p-value < 2.2e-16
+chisq.test(table(train$over_50k, train$marital_status)) # p-value < 2.2e-16
+chisq.test(table(train$over_50k, train$occupation)) # p-value < 2.2e-16
+chisq.test(table(train$over_50k, train$race)) # p-value < 2.2e-16
+chisq.test(table(train$over_50k, train$hours_week_bin)) # p-value < 2.2e-16
+chisq.test(table(train$over_50k, train$education_level)) # p-value < 2.2e-16
+
 ```
 
-Create a chart
+## Develop Logistic Regression Model
+
+# Check for issues with multi-collinearity
 
 ```{r}
-#Create a chart that you feel conveys one important relationship in the data.
+VIF.model=glm(over_50k~.,data=train[,2:13],family = binomial(link = "logit"))
+VIF.model
+# No VIF over 10
+```
 
+# Variable Selection
+
+```{r}
+# Stepwise selection to select relevant variables
+full.model <-  glm(over_50k ~ ., data=train[,2:13], family = binomial(link = "logit"))
+empty.model <- glm(over_50k ~ 1, data=train[,2:13], family = binomial(link = "logit"))
+
+step.model <- step(empty.model,
+                   scope = list(lower=formula(empty.model),
+                                upper=formula(full.model)),
+                   direction = "both")
+
+# Forward selection to select two-variable interactions 
+
+# First: double check interactions for quasi complete separation
+table(train$over_50k, train$hours_week_bin, train$occupation)
+table(train$over_50k, train$race, train$country_bin) # Quasi complete separation!!
+table(train$over_50k, train$sex, train$capital_gain_indicator)
+
+# Build main model with stepwise selected variables
+main.model <- glm(over_50k ~ marital_status + education_level + capital_gain_indicator + occupation + hours_week_bin + age_bin + capital_loss_indicator + workclass + country_bin + race,
+data = train, family = binomial(link = "logit"))
+
+# Build model with interactions of interest
+int.model <- glm(over_50k ~ marital_status + education_level + capital_gain_indicator + occupation + hours_week_bin + age_bin + capital_loss_indicator + workclass + country_bin + race + hours_week_bin*occupation + sex*capital_gain_indicator, data = train, family = binomial(link = "logit"))
+
+# Forward selection
+for.model <- step(main.model,
+                  scope = list(lower=formula(main.model),
+                               upper=formula(int.model)),
+                  direction = "forward")
+
+# Final model:
+# over_50k ~ marital_status + education_level + capital_gain_indicator + 
+#     occupation + hours_week_bin + age_bin + capital_loss_indicator + 
+#     workclass + country_bin + race + occupation*hours_week_bin
+
+```
+
+#Create Logistic Regression
+
+```{r}
+
+# GLM with binomial logit link
+logit.model <- glm(over_50k ~ marital_status + education_level +                 capital_gain_indicator + occupation + hours_week_bin + age_bin +                 capital_loss_indicator + workclass + country_bin + race +     
+    occupation*hours_week_bin, data = train, family = binomial(link = "logit"))
+summary(logit.model)
+
+```
+
+## Evaluate logistic regression
+
+# View Coefficient of Discrimination (R2)
+
+```{r}
+# Get coefficient of discrimination (R2)
+train$p_hat = predict(logit.model, type = 'response')
+p1 = train$p_hat[train$over_50k == 1]
+p0 = train$p_hat[train$over_50k == 0]
+coef_discrim = mean(p1) - mean(p0)
+print(coef_discrim)
+# Coeff of discrimination = 0.422
+
+# Get proportions of non-buy and buy
+prop0 = 26037/34189
+prop1 = 8152/34189
+# Plot probabilities as density plot
+ggplot(train, aes(p_hat, fill = over_50k)) +
+  geom_density(alpha = 0.7) +
+  labs(x = "Predicted Probability",
+       y = "Density",
+       fill = "Outcome",
+       title = paste("Coefficient of Discrimination = ",
+                     round(coef_discrim, 3), sep = ""))+
+  scale_fill_manual( values = c("royalblue","skyblue"), labels=c("Not Over 50k", "Over 50k"))+
+  theme_classic()
+```
+
+# Determine optimal cut-off
+
+```{r}
+# Iterate through cut-off values to determine optimal cut-off
+train$p_hat <- predict(logit.model, type = "response")
+
+youden <- NULL
+cutoff <- NULL
+
+for(i in 1:49){
+  cutoff = c(cutoff, i/50)
+  youden <- c(youden, youdensIndex(train$over_50k, train$p_hat, threshold = i/50))
+}
+
+# Print table with lowest Youdens at the top of the list
+ctable <- data.frame(cutoff, youden)
+print(ctable[order(-youden),])
+
+# Confusion matrix for train using Youden's Index optimal cut off
+train$classification = ifelse(train$p_hat >= 0.2, 1, 0)
+confusionMatrix(train$over_50k, factor(train$classification))
+```
+
+# AUROC
+
+```{r}
+# Evaluate model using AUROC
+
+train$p_hat <- predict(logit.model, type = "response")
+plotROC(train$over_50k, train$p_hat) # 0.902 AUROC
+
+```
+
+# Test training cut off on validation
+
+```{r}
+# Make predictions on validation set
+validation$p_hat = predict(logit.model, newdata = validation, type = 'response')
+
+# Confusion Matrix using Youdens cutoff
+validation$classification = ifelse(validation$p_hat >= 0.2, 1, 0)
+confusionMatrix(validation$over_50k, factor(validation$classification))
+
+# Get concordance
+Concordance(validation$over_50k, validation$p_hat)
+
+# Evaluate model using AUROC
+
+plotROC(validation$over_50k, validation$p_hat) # 0.899 AUROC
+```
+
+
+## Create XGBoost
+
+```{r}
+#XGBoost model here
+# Prepare data for XGBoost function
+train_x <- model.matrix(over_50k ~ ., data = train)[, 3:53]
+train_y <- as.numeric(as.character(train$over_50k))
+
+```
+
+# Tuning an XGBoost nrounds parameter - 11 was lowest
+
+```{r}
+xgbcv <- xgb.cv(data = train_x, label = train_y, subsample = 0.5, nrounds = 100, nfold = 10)
+eval <- xgbcv$evaluation_log
+
+eval %>% 
+  arrange(test_rmse_mean)
+```
+
+# Tuning through caret
+
+```{r}
+tune_grid <- expand.grid(
+  nrounds = 11,
+  eta = c(0.8, 0.85, 0.9, 0.95),
+  max_depth = c(5:15),
+  gamma = c(0),
+  colsample_bytree = 1,
+  min_child_weight = 1,
+  subsample = c(0.2, 0.25, 0.3)
+)
+
+xgb.caret <- train(x = train_x, y = as.factor(train_y),
+      method = "xgbTree",
+      tuneGrid = tune_grid,
+      trControl = trainControl(method = 'cv', # Using 10-fold cross-validation
+                               number = 10))
+
+plot(xgb.caret)
+xgb.caret
+```
+eta = .9 and subsample = .25, max tree depth = 10
+
+# Variable importance
+
+```{r}
+
+xgb <- xgboost(data = train_x, label = train_y, subsample = .25, nrounds = 11, eta = 0.9, max_depth = 10)
+
+xgb.importance(feature_names = colnames(train_x), model = xgb)
+
+xgb.ggplot.importance(xgb.importance(feature_names = colnames(train_x), model = xgb))
+```
+
+### ROC Curve and AUC
+```{r}
+# get predictions
+# Prepare data for predict function
+validation_x <- model.matrix(over_50k ~ ., data = validation)[, 3:53]
+validation_y <- as.numeric(as.character(validation$over_50k))
+p_hat_xgb <- predict(xgb, newdata = validation_x, type = "response")
+
+# create ROC object
+rocobj <- roc(validation$over_50k, p_hat_xgb)
+rocobj$auc # to get AUC - 0.816
+
+# create ROC plot with minimal theme
+ggroc(rocobj, colour = 'steelblue', size = 2) +
+  ggtitle(paste0('XGBoost Model ROC Curve ', '(AUC = ', round(rocobj$auc, 4), ')')) +
+  theme_minimal()+ labs(x="1-Specificity (FPR)",y="Sensitivity (TPR)")+geom_abline(intercept = 1.00, size = 0.5, linetype="dotted", color = "red")+ coord_cartesian(xlim=c(1,0))
+```
+# Interesting relationship
+
+```{r}
+# Add color blind palette
+cbPalette = c("#999999", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#D55E00", "#CC79A7")
+
+# Plot data
+ggplot(data = train) +
+  geom_bar(mapping = aes(x = over_50k, fill = marital_status, color =)) +
+  scale_fill_manual(values=cbPalette) + 
+  #scale_fill_discrete(labels = c("Divorced", "Married- Armed Forces", "Married- Civil Spouse", "Married- Spouse Absent", "Never Married", "Separated", "Widowed")) +
+  labs(title="Marital Status over Earning Category", x ="Earning Over 50k (0: No, 1: Yes)", y = "Frequency", fill = "Marital Status") +
+  theme_minimal()
+```
+# Get final AUROC on test data
+
+```{r}
+# Make predictions on validation set
+test$p_hat = predict(logit.model, newdata = test, type = 'response')
+
+# Confusion Matrix using Youdens cutoff
+test$classification = ifelse(test$p_hat >= 0.2, 1, 0)
+confusionMatrix(test$over_50k, factor(test$classification))
+
+# Evaluate model using AUROC
+table(census$over_50k)
+plotROC(test$over_50k, test$p_hat) # 0.894 AUROC
 ```

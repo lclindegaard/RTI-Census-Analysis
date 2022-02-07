@@ -1,4 +1,4 @@
 sql-data-consolidation
-curious-what-this-does---title
-model-building
+clean-data
+exploratory-analysis
 conclusion-write-up
